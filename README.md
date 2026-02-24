@@ -1,7 +1,6 @@
 # Ecowater Hydrolink Custom
 
 [![GitHub Release][releases-shield]][releases]
-[![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 [![hacs][hacsbadge]][hacs]
 [![Author][author-shield]][github]
@@ -130,8 +129,6 @@ Initial release.
 
 [releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-custom?style=for-the-badge
 [releases]: https://github.com/roeli1996/ha-ecowater-custom/releases
-[commits-shield]: https://img.shields.io/github/commit-activity/y/roeli1996/ha-ecowater-custom?style=for-the-badge
-[commits]: https://github.com/roeli1996/ha-ecowater-custom/commits/main
 [license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-custom?style=for-the-badge
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
