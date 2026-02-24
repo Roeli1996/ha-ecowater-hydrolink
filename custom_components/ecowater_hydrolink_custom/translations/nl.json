@@ -1,0 +1,60 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ecowater Hydrolink Custom",
+        "data": {
+          "username": "Gebruikersnaam (Email)",
+          "password": "Wachtwoord"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Instellingen",
+        "data": {
+          "scan_interval_minutes": "Update interval (minuten)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_update": { "name": "Laatste update" },
+      "salt_level_percent": { "name": "Zoutniveau" },
+      "salt_level_rounded": { "name": "Zoutniveau afgerond" },
+      "out_of_salt_days": { "name": "Dagen tot zout op is" },
+      "low_salt_trip_days": { "name": "Zout alarm drempel" },
+      "service_reminder": { "name": "Service herinnering" },
+      "water_used_today": { "name": "Waterverbruik vandaag" },
+      "total_water_used": { "name": "Totaal waterverbruik" },
+      "water_available": { "name": "Beschikbaar zacht water" },
+      "current_flow": { "name": "Huidige doorstroming" },
+      "avg_daily_use": { "name": "Gemiddeld dagelijks verbruik" },
+      "hardness": { "name": "Hardheid" },
+      "total_regens": { "name": "Totaal aantal spoelingen" },
+      "manual_regens": { "name": "Handmatige spoelingen" },
+      "days_since_regen": { "name": "Dagen sinds laatste spoeling" },
+      "avg_days_between_regens": { "name": "Gemiddeld dagen tussen spoelingen" },
+      "avg_salt_per_regen": { "name": "Gemiddeld zoutverbruik per spoeling" },
+      "model": { "name": "Model" },
+      "serial": { "name": "Serienummer" },
+      "software_version": { "name": "Software versie" },
+      "rssi": { "name": "Wifi signaalsterkte" },
+      "wifi_ssid": { "name": "Wifi netwerk" },
+      "days_in_operation": { "name": "Dagen in werking" },
+      "power_outages": { "name": "Aantal stroomonderbrekingen" },
+      "dealer_name": { "name": "Dealer naam" },
+      "dealer_phone": { "name": "Dealer telefoon" }
+    },
+    "binary_sensor": {
+      "is_regenerating": { "name": "Regeneratie status" },
+      "salt_alert": { "name": "Zout alarm" },
+      "leak_alert": { "name": "Lekkage alarm" },
+      "conn_alert": { "name": "Verbindings alarm" },
+      "error_alert": { "name": "Systeem fout alarm" }
+    }
+  }
+}
