@@ -4,6 +4,7 @@
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 [![hacs][hacsbadge]][hacs]
+[![Author][author-shield]][github]
 
 **Home Assistant integration for Ecowater water softeners via the Hydrolink platform.**
 
@@ -134,3 +135,5 @@ Initial release.
 [license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-custom?style=for-the-badge
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[author-shield]: https://img.shields.io/badge/Author-roeli1996-blue?style=for-the-badge
+[github]: https://github.com/roeli1996
