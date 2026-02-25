@@ -3,17 +3,29 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Enter your Hydrolink Plus login credentials to connect to your water softener.",
         "data": {
           "username": "Username (Email)",
-          "password": "Password"
+          "password": "Password",
+          "region": "Region",
+          "scan_interval_minutes": "Update interval (minutes)"
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Hydrolink API.",
+      "invalid_auth": "Invalid username or password.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This account is already configured."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Settings",
+        "description": "Adjust the data update frequency.",
         "data": {
           "scan_interval_minutes": "Update interval (minutes)"
         }
@@ -42,8 +54,8 @@
       "model": { "name": "Model" },
       "serial": { "name": "Serial number" },
       "software_version": { "name": "Software version" },
-      "rssi": { "name": "Wifi signal strength" },
-      "wifi_ssid": { "name": "Wifi network" },
+      "rssi": { "name": "WiFi signal strength" },
+      "wifi_ssid": { "name": "WiFi network" },
       "days_in_operation": { "name": "Days in operation" },
       "power_outages": { "name": "Power outage count" },
       "dealer_name": { "name": "Dealer name" },
