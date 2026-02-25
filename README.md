@@ -9,7 +9,7 @@
 
 This custom integration retrieves 'real-time' data from your Ecowater water softener through the 'Hydrolink API' and displays it as sensors and binary sensors in Home Assistant. You can monitor water usage, salt level, regeneration status, alerts, and many other parameters. Many more sensors are available in the API. Currently, the most relevant sensors have been added.
 
-API refers to the European platform.
+API refers to the European platform. Since version 1.1.0 there is also the posibility to use the US platform. This is not tested yet, because I don't have a device on that platform. Please provide me with feedback if you have a device! 
 
 ## 📦 Features
 
@@ -118,6 +118,8 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 
 ## 📝 Changelog
+### V1.1.0 - 25-02-2026
+Support for US platform (not tested, I don't have a devica on that platform).
 
 ### V1.0.0 - 24-02-2026
 Initial release.
