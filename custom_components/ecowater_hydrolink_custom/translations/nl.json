@@ -3,17 +3,29 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Voer je Hydrolink Plus inloggegevens in om verbinding te maken met je waterontharder.",
         "data": {
           "username": "Gebruikersnaam (Email)",
-          "password": "Wachtwoord"
+          "password": "Wachtwoord",
+          "region": "Regio",
+          "scan_interval_minutes": "Update interval (minuten)"
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Verbinding met de Hydrolink API mislukt.",
+      "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord.",
+      "unknown": "Er is een onverwachte fout opgetreden."
+    },
+    "abort": {
+      "already_configured": "Dit account is al geconfigureerd."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Instellingen",
+        "description": "Pas de update-frequentie van de data aan.",
         "data": {
           "scan_interval_minutes": "Update interval (minuten)"
         }
