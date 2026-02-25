@@ -11,6 +11,11 @@ This custom integration retrieves 'real-time' data from your Ecowater water soft
 
 API refers to the European platform. Since version 1.1.0 there is also the posibility to use the US platform. This is not tested yet, because I don't have a device on that platform. Please provide me with feedback if you have a device! 
 
+---
+## Known limitations 
+Reading new data only works after the local app has been started. I'm still looking for a way to bypass this.
+---
+
 ## 📦 Features
 
 - Extensive sensor values such as salt percentage, water usage (today/total), estimated days until salt runs out, flow rate, hardness, regeneration count, etc.
