@@ -6,7 +6,8 @@
         "description": "Voer je Hydrolink Plus inloggegevens in om verbinding te maken met je waterontharder.",
         "data": {
           "username": "Gebruikersnaam (Email)",
-          "password": "Wachtwoord"
+          "password": "Wachtwoord",
+          "region": "Regio"
         }
       }
     },
@@ -67,4 +68,5 @@
       "error_alert": { "name": "Systeem fout alarm" }
     }
   }
+
 }
