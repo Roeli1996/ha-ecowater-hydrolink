@@ -13,6 +13,13 @@ This custom integration retrieves real-time data from your Ecowater water soften
 > - **Europe** (`app.hydrolinkhome.eu`)  
 > - **US / Other** (`app.hydrolinkhome.com`)
 
+US Platform is not tested yet, because I don't have a device on that platform. Please provide me with feedback if you have a device! 
+
+---
+## Known limitations 
+Reading new data only works after the local app has been started. I'm still looking for a way to bypass this.
+---
+
 ## 📦 Features
 
 - Extensive sensor values: salt percentage, water usage (today/total), estimated days until salt runs out, flow rate, hardness, regeneration count, and more.
@@ -122,8 +129,6 @@ The integration automatically renews the token when a 401 response is received. 
 
 ### v1.0.0 – 2026-02-24
 - Initial release (EU only).
-
----
 
 ## 📝 License
 
