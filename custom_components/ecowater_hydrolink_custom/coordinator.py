@@ -13,11 +13,12 @@ from homeassistant.util import dt as dt_util
 
 from .const import (
     DOMAIN,
-    LOGIN_URL,
-    DATA_URL,
-    HEADERS,
+    BASE_URLS,
+    CONF_REGION,
+    REGION_EU,
     CONF_USERNAME,
     CONF_PASSWORD,
+    HEADERS,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
 )
@@ -25,16 +26,24 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 class EcowaterCoordinator(DataUpdateCoordinator):
-    """Coördinator voor het periodiek ophalen van Ecowater data."""
+    """Coordinator for periodically fetching Ecowater data."""
 
     def __init__(self, hass, entry):
-        """Initialiseer de coordinator met dynamisch interval."""
+        """Initialize the coordinator with dynamic interval and region."""
         self.entry = entry
+        self.region = entry.data.get(CONF_REGION, REGION_EU)  # default to EU for existing entries
+        self.base_url = BASE_URLS[self.region]
+        self.login_url = f"{self.base_url}/auth/login"
+        self.data_url = f"{self.base_url}/devices?all=false&per_page=200"
+
         interval = entry.options.get(
             SCAN_INTERVAL_MINUTES,
             entry.data.get(SCAN_INTERVAL_MINUTES, DEFAULT_SCAN_INTERVAL)
         )
-        _LOGGER.debug("Coordinator update interval: %s minuten -> %s", interval, timedelta(minutes=interval))
+        _LOGGER.debug(
+            "Coordinator for region %s, update interval: %s minutes -> %s",
+            self.region, interval, timedelta(minutes=interval)
+        )
         super().__init__(
             hass,
             _LOGGER,
@@ -43,10 +52,10 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         )
         self.token = None
         self.session = async_get_clientsession(hass)
-        _LOGGER.debug("Coordinator geïnitialiseerd")
+        _LOGGER.debug("Coordinator initialized")
 
     async def _async_request(self, method, url, **kwargs):
-        """Voer een HTTP-request uit met retry bij DNS- en netwerkfouten."""
+        """Perform an HTTP request with retry on DNS and network errors."""
         max_retries = 2
         for attempt in range(max_retries + 1):
             try:
@@ -56,70 +65,68 @@ class EcowaterCoordinator(DataUpdateCoordinator):
                 if attempt < max_retries:
                     wait = 2 * (attempt + 1)
                     _LOGGER.warning(
-                        "Fout bij %s %s (poging %d/%d): %s. Opnieuw proberen over %s seconden.",
+                        "Error on %s %s (attempt %d/%d): %s. Retrying in %s seconds.",
                         method, url, attempt + 1, max_retries + 1, err, wait
                     )
                     await asyncio.sleep(wait)
                 else:
-                    _LOGGER.error("Max retries bereikt voor %s %s", method, url)
+                    _LOGGER.error("Max retries reached for %s %s", method, url)
                     raise
             except Exception as err:
-                _LOGGER.exception("Onverwachte fout bij %s %s", method, url)
+                _LOGGER.exception("Unexpected error on %s %s", method, url)
                 raise
 
     async def _get_token(self):
-        """Haal een nieuw access token op."""
+        """Obtain a new access token."""
         auth_payload = {
             "email": self.entry.data[CONF_USERNAME],
             "password": self.entry.data[CONF_PASSWORD]
         }
         try:
-            response = await self._async_request("POST", LOGIN_URL, json=auth_payload, headers=HEADERS)
+            response = await self._async_request("POST", self.login_url, json=auth_payload, headers=HEADERS)
             response.raise_for_status()
             data = await response.json()
             token = data.get("access_token") or data.get("token")
             if token:
-                _LOGGER.debug("Token succesvol opgehaald")
+                _LOGGER.debug("Token successfully obtained")
             else:
-                _LOGGER.error("Geen token in response: %s", data)
+                _LOGGER.error("No token in response: %s", data)
             return token
         except Exception as ex:
-            _LOGGER.exception("Authenticatie mislukt bij Ecowater")
+            _LOGGER.exception("Authentication failed for Ecowater")
             return None
 
     async def _fetch_data(self):
-        """Intern ophalen van data."""
-        # Zorg voor een geldig token
+        """Internal data fetching."""
         if not self.token:
             self.token = await self._get_token()
 
         if not self.token:
-            raise UpdateFailed("Kon niet inloggen bij Ecowater (geen token)")
+            raise UpdateFailed("Could not log in to Ecowater (no token)")
 
         headers = HEADERS.copy()
         headers["Authorization"] = f"Bearer {self.token}"
 
         try:
-            response = await self._async_request("GET", DATA_URL, headers=headers)
+            response = await self._async_request("GET", self.data_url, headers=headers)
             _LOGGER.debug("Response status: %s", response.status)
 
-            # Als token verlopen is (401), probeer één keer opnieuw met nieuw token
             if response.status == 401:
-                _LOGGER.debug("Token verlopen, nieuw token aanvragen")
+                _LOGGER.debug("Token expired, requesting new token")
                 self.token = await self._get_token()
                 if not self.token:
-                    raise UpdateFailed("Token vernieuwing mislukt")
+                    raise UpdateFailed("Token renewal failed")
                 headers["Authorization"] = f"Bearer {self.token}"
-                response = await self._async_request("GET", DATA_URL, headers=headers)
-                _LOGGER.debug("Nieuwe response status: %s", response.status)
+                response = await self._async_request("GET", self.data_url, headers=headers)
+                _LOGGER.debug("New response status: %s", response.status)
 
             response.raise_for_status()
             json_data = await response.json()
-            _LOGGER.debug("JSON response ontvangen")
+            _LOGGER.debug("JSON response received")
 
             devices = json_data.get("data", [])
             if not devices:
-                raise UpdateFailed("Geen apparaten gevonden in Ecowater account")
+                raise UpdateFailed("No devices found in Ecowater account")
 
             dev = devices[0]
             props = dev.get("properties", {})
@@ -128,7 +135,6 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             wts = wt.get("water_treatment_status", {})
             dealership = dev.get("dealership", {})
 
-            # Hulpfunctie om veilig een waarde uit properties te halen
             def get_prop_value(key, subkey="value", default=None):
                 prop = props.get(key, {})
                 return prop.get(subkey, default)
@@ -137,9 +143,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
                 prop = props.get(key, {})
                 return prop.get("converted_value", default)
 
-            # Data verzamelen
             data = {
-                # Gebruik timezone-aware datetime voor timestamp device class
                 "last_update": dt_util.now(),
                 "salt_level_percent": wt.get("salt_level_percent"),
                 "salt_level_rounded": wt.get("salt_level", {}).get("salt_level_percent_rounded"),
@@ -171,20 +175,20 @@ class EcowaterCoordinator(DataUpdateCoordinator):
                 "leak_alert": wts.get("flow_monitor_alert", False),
                 "error_alert": wts.get("error_code_alert", False),
             }
-            _LOGGER.debug("Data samengesteld: %s", {k: v for k, v in data.items() if k not in ["serial", "dealer_phone"]})
+            _LOGGER.debug("Data assembled: %s", {k: v for k, v in data.items() if k not in ["serial", "dealer_phone"]})
             return data
 
         except Exception as ex:
-            _LOGGER.exception("Fout bij ophalen Ecowater data")
-            raise UpdateFailed(f"Update mislukt: {ex}")
+            _LOGGER.exception("Error fetching Ecowater data")
+            raise UpdateFailed(f"Update failed: {ex}")
 
     async def _async_update_data(self):
-        """Wordt periodiek aangeroepen door de basisklasse."""
-        _LOGGER.debug("_async_update_data GESTART om %s", dt_util.now())
+        """Periodically called by the base class."""
+        _LOGGER.debug("_async_update_data STARTED at %s", dt_util.now())
         try:
             data = await self._fetch_data()
-            _LOGGER.debug("_async_update_data succesvol, data keys: %s", list(data.keys()))
+            _LOGGER.debug("_async_update_data successful, data keys: %s", list(data.keys()))
             return data
         except Exception as err:
-            _LOGGER.exception("Fout in _async_update_data")
-            raise UpdateFailed(f"Update mislukt: {err}")
+            _LOGGER.exception("Error in _async_update_data")
+            raise UpdateFailed(f"Update failed: {err}")
