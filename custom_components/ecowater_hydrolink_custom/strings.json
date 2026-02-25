@@ -3,11 +3,12 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
-        "description": "Voer je Hydrolink Plus inloggegevens in om verbinding te maken met je waterontharder.",
+        "description": "Voer je Hydrolink inloggegevens in om verbinding te maken met je waterontharder.",
         "data": {
           "username": "Gebruikersnaam (Email)",
           "password": "Wachtwoord",
-          "region": "Regio"
+          "region": "Regio",
+          "scan_interval_minutes": "Update interval (minuten)"
         }
       }
     },
@@ -68,5 +69,4 @@
       "error_alert": { "name": "Systeem fout alarm" }
     }
   }
-
 }
