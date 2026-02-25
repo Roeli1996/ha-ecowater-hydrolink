@@ -7,17 +7,19 @@
 
 **Home Assistant integration for Ecowater water softeners via the Hydrolink platform.**
 
-This custom integration retrieves 'real-time' data from your Ecowater water softener through the 'Hydrolink API' and displays it as sensors and binary sensors in Home Assistant. You can monitor water usage, salt level, regeneration status, alerts, and many other parameters. Many more sensors are available in the API. Currently, the most relevant sensors have been added.
+This custom integration retrieves real-time data from your Ecowater water softener through the Hydrolink API and displays it as sensors and binary sensors in Home Assistant. You can monitor water usage, salt level, regeneration status, alerts, and many other parameters. The API offers many more sensors; currently the most relevant ones have been added.
 
-API refers to the European platform.
+> **🌍 Multi-region support:** Starting from version 1.1.0, you can select your region during configuration:  
+> - **Europe** (`app.hydrolinkhome.eu`)  
+> - **US / Other** (`app.hydrolinkhome.com`)
 
 ## 📦 Features
 
-- Extensive sensor values such as salt percentage, water usage (today/total), estimated days until salt runs out, flow rate, hardness, regeneration count, etc.
-- Binary sensors for regeneration status, salt and leak alerts.
+- Extensive sensor values: salt percentage, water usage (today/total), estimated days until salt runs out, flow rate, hardness, regeneration count, and more.
+- Binary sensors for regeneration status, salt alerts, leak alerts, and system errors.
 - Automatic API token renewal.
 - Configurable update interval (via options).
-- Supports multiple devices? (The API returns one device, but the code is prepared for multiple.)
+- Multi-region support (EU and US).
 
 ## 🔧 Installation
 
@@ -25,15 +27,15 @@ API refers to the European platform.
 
 1. Ensure [HACS](https://hacs.xyz) is installed.
 2. Add this repository as a custom repository:
-   - HACS → Integrations → three dots → Custom repositories
+   - HACS → Integrations → three dots → **Custom repositories**
    - Repository URL: `https://github.com/roeli1996/ha-ecowater-custom`
-   - Category: Integration
-3. Click "Install" on the Ecowater Hydrolink Custom page in HACS.
+   - Category: **Integration**
+3. Click **Install** on the Ecowater Hydrolink Custom page in HACS.
 4. Restart Home Assistant.
 
 ### Manual installation
 
-1. Download the `ecowater_hydrolink_custom` folder from the repository.
+1. Download the `ecowater_hydrolink_custom` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-custom/releases).
 2. Place it in your `custom_components` directory.
 3. Restart Home Assistant.
 
@@ -44,15 +46,15 @@ The integration is fully configured via the Home Assistant user interface.
 1. Go to **Settings → Devices & services**.
 2. Click **Add Integration** and search for "Ecowater Hydrolink Custom".
 3. Enter your login credentials (email and password of your Hydrolink account).
-4. Set the desired **update interval** in minutes (default 5 minutes, it works on 1 minute also).
-5. Click Submit.
+4. **Select your region** (EU or US). This determines the correct API endpoint.
+5. Set the desired **update interval** in minutes (default 5 minutes; 1 minute also works).
+6. Click **Submit**.
 
-After successful configuration, sensors and binary sensors will appear automatically.
+After successful configuration, all sensors and binary sensors will appear automatically under one device.
 
 ### Changing options
 
-After installation, you can adjust the update interval via:
-
+After installation, you can adjust the update interval via:  
 **Device → three dots → Options**
 
 ## 📊 Sensors
@@ -99,37 +101,41 @@ The integration adds the following sensors (all grouped under one device):
 
 ## ❓ Troubleshooting
 
-### "No data"
-- Verify your login credentials.
-- Check the Home Assistant logs (Settings → System → Logs) for error messages containing `ecowater_hydrolink_custom`.
-
+### "No data" or sensors unavailable
+- Verify your login credentials and region selection.
+- Check the Home Assistant logs (**Settings → System → Logs**) for error messages containing `ecowater_hydrolink_custom`.
 
 ### Token expiration
 The integration automatically renews the token when a 401 response is received. If this fails, check your internet connection.
 
+### Known limitations
+- Only tested on an **eVO REFINER POWER** (EU). US devices may have slight differences; feedback is welcome.
+- Not tested on multiple devices under a single account.
 
-### Test limitations
-Not tested on multiple devices on a single account.
-Only tested on an "eVO REFINER POWER".
+## 📝 Changelog
+
+### v1.1.0 – 2026-02-26
+- **Added region selection** (EU / US) during configuration.  
+- Updated API endpoints for US platform (`app.hydrolinkhome.com`).  
+- Fixed timestamp timezone issue for `last_update` sensor.  
+- Improved error handling and logging.
+
+### v1.0.0 – 2026-02-24
+- Initial release (EU only).
+
+---
 
 ## 📝 License
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
-
-## 📝 Changelog
-
-### V1.0.0 - 24-02-2026
-Initial release.
-
-
 ---
 
 **Note:** This integration is not officially affiliated with EcoWater or Hydrolink. Use at your own risk.
 
-[releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-hydrolink?style=for-the-badge
-[releases]: https://github.com/Roeli1996/ha-ecowater-hydrolink/releases/
-[license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-hydrolink?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-custom?style=for-the-badge
+[releases]: https://github.com/roeli1996/ha-ecowater-custom/releases
+[license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-custom?style=for-the-badge
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [author-shield]: https://img.shields.io/badge/Author-roeli1996-blue?style=for-the-badge
