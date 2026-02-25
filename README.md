@@ -42,7 +42,7 @@ Reading new data only works after the local app has been started. I'm still look
 
 ### Manual installation
 
-1. Download the `ecowater_hydrolink_custom` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-custom/releases).
+1. Download the `ecowater_hydrolink_custom` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-hydrolink/releases).
 2. Place it in your `custom_components` directory.
 3. Restart Home Assistant.
 
