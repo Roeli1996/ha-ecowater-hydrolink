@@ -121,6 +121,15 @@ The integration automatically renews the token when a 401 response is received. 
 
 ## 📝 Changelog
 
+## V1.1.1 - 2026-02-26
+
+### Fixed
+- **Added migration handler** for existing configurations (version 1 → 2). This resolves the *"Migration handler not found"* error that occurred when updating the integration. Existing users are automatically migrated with the region set to `EU`, ensuring they can continue using the integration without interruption.
+- **Note for US users:** If you wish to switch from the EU to the US platform, please remove the integration and add it again with the appropriate region selected. (Region cannot be changed via options at this time.)
+
+### Changed
+- Internal: enhanced logging during migration for improved debugging and troubleshooting.
+
 ### v1.1.0 – 2026-02-26
 - **Added region selection** (EU / US) during configuration.  
 - Updated API endpoints for US platform (`app.hydrolinkhome.com`).  
