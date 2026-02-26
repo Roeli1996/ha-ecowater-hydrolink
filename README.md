@@ -13,7 +13,6 @@ This custom integration retrieves real-time data from your Ecowater water soften
 > - **Europe** (`app.hydrolinkhome.eu`)  
 > - **US / Other** (`app.hydrolinkhome.com`)
 
-> **⚠️ Note for US users:** The US platform has not been tested yet (I don't have a device on that platform). Feedback is welcome if you have a device!
 
 ### ⚠️ Data refresh improvement
 Previous versions required the Hydrolink mobile app to be opened to wake up the device and get fresh data. **Version 1.2.0 introduces a wake-up mechanism** that sends a signal to the `/live` endpoint before fetching data, making the integration independent of the mobile app. This should resolve the issue. Feedback is appreciated!
