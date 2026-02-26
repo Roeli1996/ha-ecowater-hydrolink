@@ -15,8 +15,8 @@ This custom integration retrieves real-time data from your Ecowater water soften
 
 US Platform is not tested yet, because I don't have a device on that platform. Please provide me with feedback if you have a device! 
 
-## ⚠️ Known limitations 
-Reading new data only works after the local app has been started. I'm still looking for a way to bypass this.
+### ⚠️  
+Reading new data only works after the local app has been started. I think version 1.2.0 should solve the problem. Still need to conform.
 
 ## 📦 Features
 
@@ -119,13 +119,13 @@ The integration automatically renews the token when a 401 response is received. 
 
 ## 📝 Changelog
 
-## V1.1.1 - 2026-02-26
+### V1.1.1 - 2026-02-26
 
-### Fixed
+#### Fixed
 - **Added migration handler** for existing configurations (version 1 → 2). This resolves the *"Migration handler not found"* error that occurred when updating the integration. Existing users are automatically migrated with the region set to `EU`, ensuring they can continue using the integration without interruption.
 - **Note for US users:** If you wish to switch from the EU to the US platform, please remove the integration and add it again with the appropriate region selected. (Region cannot be changed via options at this time.)
 
-### Changed
+#### Changed
 - Internal: enhanced logging during migration for improved debugging and troubleshooting.
 
 ### v1.1.0 – 2026-02-26
