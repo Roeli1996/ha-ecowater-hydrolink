@@ -152,9 +152,12 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
-### v1.3.1 - 2026-02-26
-#### Added
-- **Logo in brand**: Added logo to the repo.
+### v1.3.1 – Added logo (cosmetic only)
+
+This release adds a logo to the integration for a nicer appearance in the Home Assistant interface.
+**No functional changes** – updating is optional and only recommended if you'd like to see the logo.
+
+If you're happy with the current version, you can safely skip this update.
 
 ### v1.3.0 - 2026-02-26
 #### Added
