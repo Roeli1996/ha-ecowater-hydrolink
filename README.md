@@ -152,6 +152,10 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
+### v1.3.1 - 2026-02-26
+#### Added
+- **Logo in brand**: Added logo to the repo.
+
 ### v1.3.0 - 2026-02-26
 #### Added
 - **Unit system selection**: Choose between metric (liters, kg) and imperial (gallons, lbs) during configuration or via options. The integration automatically displays the correct values based on your preference.
