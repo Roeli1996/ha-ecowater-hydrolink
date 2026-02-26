@@ -13,10 +13,10 @@ This custom integration retrieves real-time data from your Ecowater water soften
 > - **Europe** (`app.hydrolinkhome.eu`)  
 > - **US / Other** (`app.hydrolinkhome.com`)
 
-US Platform is not tested yet, because I don't have a device on that platform. Please provide me with feedback if you have a device! 
+> **⚠️ Note for US users:** The US platform has not been tested yet (I don't have a device on that platform). Feedback is welcome if you have a device!
 
-### ⚠️  
-Reading new data only works after the local app has been started. I think version 1.2.0 should solve the problem. Still need to conform.
+### ⚠️ Data refresh improvement
+Previous versions required the Hydrolink mobile app to be opened to wake up the device and get fresh data. **Version 1.2.0 introduces a wake-up mechanism** that sends a signal to the `/live` endpoint before fetching data, making the integration independent of the mobile app. This should resolve the issue. Feedback is appreciated!
 
 ## 📦 Features
 
@@ -40,7 +40,7 @@ Reading new data only works after the local app has been started. I think versio
 
 ### Manual installation
 
-1. Download the `ecowater_hydrolink_custom` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-hydrolink/releases).
+1. Download the `ha-ecowater-hydrolink` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-hydrolink/releases).
 2. Place it in your `custom_components` directory.
 3. Restart Home Assistant.
 
@@ -119,8 +119,19 @@ The integration automatically renews the token when a 401 response is received. 
 
 ## 📝 Changelog
 
-### V1.1.1 - 2026-02-26
+### v1.2.0 - 2026-02-26
+#### Added
+- **Wake-up mechanism**: The integration now sends a signal to the `/live` endpoint before each update to wake up the device, followed by fetching the latest data via `/detail-or-summary`. This ensures that the displayed data is always up-to-date, similar to the web app, and eliminates the need to open the mobile app for fresh data.
 
+#### Changed
+- The coordinator now uses the combination of `/live` (wake-up) and `/detail-or-summary` (data) for every scheduled update once the device ID is known. On the first startup, the device list is still used to determine the ID.
+- Internal restructuring of the data fetching method for better readability and error handling.
+
+#### Notes
+- This change works for both the EU and US platforms.
+- Existing configurations remain intact; no reconfiguration is required.
+
+### v1.1.1 - 2026-02-26
 #### Fixed
 - **Added migration handler** for existing configurations (version 1 → 2). This resolves the *"Migration handler not found"* error that occurred when updating the integration. Existing users are automatically migrated with the region set to `EU`, ensuring they can continue using the integration without interruption.
 - **Note for US users:** If you wish to switch from the EU to the US platform, please remove the integration and add it again with the appropriate region selected. (Region cannot be changed via options at this time.)
@@ -145,9 +156,9 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 **Note:** This integration is not officially affiliated with EcoWater or Hydrolink. Use at your own risk.
 
-[releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-custom?style=for-the-badge
-[releases]: https://github.com/roeli1996/ha-ecowater-custom/releases
-[license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-custom?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-hydrolink?style=for-the-badge
+[releases]: https://github.com/roeli1996/ha-ecowater-hydrolink/releases
+[license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-hydrolink?style=for-the-badge
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [author-shield]: https://img.shields.io/badge/Author-roeli1996-blue?style=for-the-badge
