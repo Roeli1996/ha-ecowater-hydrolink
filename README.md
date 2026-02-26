@@ -15,10 +15,8 @@ This custom integration retrieves real-time data from your Ecowater water soften
 
 US Platform is not tested yet, because I don't have a device on that platform. Please provide me with feedback if you have a device! 
 
----
 ## Known limitations 
 Reading new data only works after the local app has been started. I'm still looking for a way to bypass this.
----
 
 ## 📦 Features
 
