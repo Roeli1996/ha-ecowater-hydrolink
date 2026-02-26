@@ -8,6 +8,7 @@
           "username": "Username (Email)",
           "password": "Password",
           "region": "Region",
+          "unit_system": "Unit system",
           "scan_interval_minutes": "Update interval (minutes)"
         }
       }
@@ -25,8 +26,9 @@
     "step": {
       "init": {
         "title": "Settings",
-        "description": "Adjust the data update frequency.",
+        "description": "Adjust the data update frequency and unit system.",
         "data": {
+          "unit_system": "Unit system",
           "scan_interval_minutes": "Update interval (minutes)"
         }
       }
@@ -59,14 +61,15 @@
       "days_in_operation": { "name": "Days in operation" },
       "power_outages": { "name": "Power outage count" },
       "dealer_name": { "name": "Dealer name" },
-      "dealer_phone": { "name": "Dealer phone" }
+      "dealer_phone": { "name": "Dealer phone" },
+      "rock_removed_since_regen": { "name": "Rock removed since last regeneration" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regeneration status" },
       "salt_alert": { "name": "Salt alert" },
       "leak_alert": { "name": "Leak alert" },
-      "conn_alert": { "name": "Connection alert" },
-      "error_alert": { "name": "System error alert" }
+      "error_alert": { "name": "System error alert" },
+      "alarm_beeping": { "name": "Alarm beeping" }
     }
   }
 }
