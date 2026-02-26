@@ -1,14 +1,13 @@
 {
   "domain": "ecowater_hydrolink_custom",
   "name": "Ecowater Hydrolink Custom",
-  "version": "1.1.1",
-  "documentation": "https://github.com/roeli1996/ha-ecowater-custom",
-  "issue_tracker": "https://github.com/roeli1996/ha-ecowater-custom/issues",
+  "version": "1.2.0",
+  "documentation": "https://github.com/roeli1996/ha-ecowater-hydrolink",
+  "issue_tracker": "https://github.com/roeli1996/ha-ecowater-hydrolink/issues",
   "dependencies": [],
   "codeowners": ["@roeli1996"],
   "iot_class": "cloud_polling",
   "config_flow": true,
   "requirements": ["aiohttp", "async_timeout"]
 }
-
 
