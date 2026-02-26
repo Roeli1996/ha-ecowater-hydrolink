@@ -1,5 +1,6 @@
 import logging
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -10,23 +11,26 @@ async def async_setup_entry(hass, entry, async_add_entities):
     _LOGGER.debug("Setting up Ecowater binary sensors")
 
     binary_sensors = [
-        EcoWaterBinarySensor(coordinator, "Regenerating", "is_regenerating", BinarySensorDeviceClass.RUNNING),
-        EcoWaterBinarySensor(coordinator, "Salt Alert", "salt_alert", BinarySensorDeviceClass.PROBLEM),
-        EcoWaterBinarySensor(coordinator, "Leak Alert", "leak_alert", BinarySensorDeviceClass.PROBLEM),
-        EcoWaterBinarySensor(coordinator, "Error Alert", "error_alert", BinarySensorDeviceClass.PROBLEM),
+        EcoWaterBinarySensor(coordinator, "is_regenerating", BinarySensorDeviceClass.RUNNING),
+        EcoWaterBinarySensor(coordinator, "salt_alert", BinarySensorDeviceClass.PROBLEM),
+        EcoWaterBinarySensor(coordinator, "leak_alert", BinarySensorDeviceClass.PROBLEM),
+        EcoWaterBinarySensor(coordinator, "error_alert", BinarySensorDeviceClass.PROBLEM),
+        EcoWaterBinarySensor(coordinator, "alarm_beeping", BinarySensorDeviceClass.SOUND),
     ]
 
     _LOGGER.debug("Aantal binary sensors om toe te voegen: %d", len(binary_sensors))
     async_add_entities(binary_sensors)
     _LOGGER.debug("Binary sensors toegevoegd aan Home Assistant")
 
-class EcoWaterBinarySensor(BinarySensorEntity):
+
+class EcoWaterBinarySensor(CoordinatorEntity, BinarySensorEntity):
     """Vertegenwoordigt een Ecowater binary sensor."""
 
-    def __init__(self, coordinator, name, data_key, device_class):
-        self.coordinator = coordinator
+    def __init__(self, coordinator, data_key, device_class):
+        super().__init__(coordinator)
         self._data_key = data_key
-        self._attr_name = f"Ecowater {name}"
+        self._attr_translation_key = data_key
+        self._attr_has_entity_name = True
         self._attr_device_class = device_class
         self._attr_unique_id = f"{DOMAIN}_bin_{data_key}_{coordinator.entry.entry_id}"
         self._attr_device_info = {
@@ -50,9 +54,3 @@ class EcoWaterBinarySensor(BinarySensorEntity):
     def available(self):
         """Geef beschikbaarheid op basis van de coordinator."""
         return self.coordinator.last_update_success
-
-    async def async_added_to_hass(self):
-        """Stel listener in voor coordinator updates."""
-        self.async_on_remove(
-            self.coordinator.async_add_listener(self.async_write_ha_state)
-        )
