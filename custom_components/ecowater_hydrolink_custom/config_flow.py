@@ -1,3 +1,5 @@
+"""Config flow for Ecowater Hydrolink Custom integration."""
+import logging
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -13,10 +15,12 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
 )
 
+_LOGGER = logging.getLogger(__name__)
+
 class EcowaterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Ecowater Hydrolink Custom."""
 
-    VERSION = 2  # Increment version because we changed the data schema
+    VERSION = 2
 
     async def async_step_user(self, user_input=None):
         """Step called when the user adds the integration."""
@@ -57,6 +61,20 @@ class EcowaterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(config_entry):
         """Return the options flow handler."""
         return EcowaterOptionsFlowHandler(config_entry)
+
+    async def async_migrate_entry(self, hass, config_entry: config_entries.ConfigEntry):
+        """Migrate old entry."""
+        _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+        if config_entry.version == 1:
+            # Version 1 had no region; add EU as default
+            new_data = {**config_entry.data}
+            new_data[CONF_REGION] = REGION_EU
+            config_entry.version = 2
+            hass.config_entries.async_update_entry(config_entry, data=new_data)
+            _LOGGER.debug("Migration to version 2 complete")
+
+        return True
 
 
 class EcowaterOptionsFlowHandler(config_entries.OptionsFlow):
