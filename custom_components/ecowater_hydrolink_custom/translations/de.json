@@ -1,0 +1,77 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ecowater Hydrolink Custom",
+        "description": "Geben Sie Ihre Hydrolink Plus Anmeldedaten ein, um eine Verbindung zu Ihrem Wasserenthärter herzustellen.",
+        "data": {
+          "username": "Benutzername (E-Mail)",
+          "password": "Passwort",
+          "region": "Region",
+          "unit_system": "Einheitensystem",
+          "scan_interval_minutes": "Aktualisierungsintervall (Minuten)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur Hydrolink-API fehlgeschlagen.",
+      "invalid_auth": "Ungültiger Benutzername oder Passwort.",
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "abort": {
+      "already_configured": "Dieses Konto ist bereits konfiguriert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Einstellungen",
+        "description": "Passen Sie die Aktualisierungshäufigkeit und das Einheitensystem an.",
+        "data": {
+          "unit_system": "Einheitensystem",
+          "scan_interval_minutes": "Aktualisierungsintervall (Minuten)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_update": { "name": "Letzte Aktualisierung" },
+      "salt_level_percent": { "name": "Salzgehalt" },
+      "salt_level_rounded": { "name": "Salzgehalt gerundet" },
+      "out_of_salt_days": { "name": "Tage bis Salz leer" },
+      "low_salt_trip_days": { "name": "Salzalarmschwelle" },
+      "service_reminder": { "name": "Serviceerinnerung" },
+      "water_used_today": { "name": "Wasserverbrauch heute" },
+      "total_water_used": { "name": "Gesamtwasserverbrauch" },
+      "water_available": { "name": "Verfügbares Weichwasser" },
+      "current_flow": { "name": "Aktuelle Durchflussrate" },
+      "avg_daily_use": { "name": "Durchschnittlicher täglicher Verbrauch" },
+      "hardness": { "name": "Härte" },
+      "total_regens": { "name": "Gesamtzahl der Regenerationen" },
+      "manual_regens": { "name": "Manuelle Regenerationen" },
+      "days_since_regen": { "name": "Tage seit letzter Regeneration" },
+      "avg_days_between_regens": { "name": "Durchschnittliche Tage zwischen Regenerationen" },
+      "avg_salt_per_regen": { "name": "Durchschnittlicher Salzverbrauch pro Regeneration" },
+      "model": { "name": "Modell" },
+      "serial": { "name": "Seriennummer" },
+      "software_version": { "name": "Softwareversion" },
+      "rssi": { "name": "Wi-Fi-Signalstärke" },
+      "wifi_ssid": { "name": "Wi-Fi-Netzwerk" },
+      "days_in_operation": { "name": "Betriebstage" },
+      "power_outages": { "name": "Anzahl der Stromausfälle" },
+      "dealer_name": { "name": "Händlername" },
+      "dealer_phone": { "name": "Händlertelefon" },
+      "rock_removed_since_regen": { "name": "Entfernte Härte seit letzter Regeneration" },
+      "total_rock_removed": { "name": "Gesamte entfernte Härte" },
+      "total_salt_use": { "name": "Gesamtsalzverbrauch" }
+    },
+    "binary_sensor": {
+      "is_regenerating": { "name": "Regenerationsstatus" },
+      "salt_alert": { "name": "Salzalarm" },
+      "leak_alert": { "name": "Leckagealarm" },
+      "error_alert": { "name": "Systemfehleralarm" },
+      "alarm_beeping": { "name": "Alarmsummer" }
+    }
+  }
+}
