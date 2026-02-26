@@ -26,6 +26,22 @@ This custom integration retrieves real-time data from your Ecowater water soften
 - Selectable unit system (metric or imperial) with the alternative unit available as an attribute on each sensor.
 - Wake-up mechanism (since v1.2.0) that polls the `/live` endpoint before each update to ensure fresh data, eliminating the need to open the mobile app.
 
+## 🌐 Language support
+
+The integration is translated into several languages and will automatically display sensor and configuration names in your Home Assistant language if available.
+
+Currently supported languages:
+- 🇳🇱 **Dutch** (Nederlands)
+- 🇬🇧 **English**
+- 🇫🇷 **French** (Français)
+- 🇩🇪 **German** (Deutsch)
+- 🇮🇹 **Italian** (Italiano)
+- 🇵🇱 **Polish** (Polski)
+- 🇪🇸 **Spanish** (Español)
+- 🇵🇹 **Portuguese** (Português)
+
+If your language is not listed, the interface will fall back to English. Translations are community‑contributed – feel free to help add more!
+
 ## 🔧 Installation
 
 ### Via HACS (recommended)
