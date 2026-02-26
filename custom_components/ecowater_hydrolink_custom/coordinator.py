@@ -18,6 +18,8 @@ from .const import (
     REGION_EU,
     CONF_USERNAME,
     CONF_PASSWORD,
+    CONF_UNIT_SYSTEM,
+    UNIT_METRIC,
     HEADERS,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
@@ -32,6 +34,13 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         """Initialize the coordinator with dynamic interval and region."""
         self.entry = entry
         self.region = entry.data.get(CONF_REGION, REGION_EU)
+        self.unit_system = entry.options.get(CONF_UNIT_SYSTEM, entry.data.get(CONF_UNIT_SYSTEM, UNIT_METRIC))
+        _LOGGER.debug(
+            "Coordinator unit_system = %s (uit options: %s, uit data: %s)",
+            self.unit_system,
+            entry.options.get(CONF_UNIT_SYSTEM),
+            entry.data.get(CONF_UNIT_SYSTEM)
+        )
         self.base_url = BASE_URLS[self.region]
         self.login_url = f"{self.base_url}/auth/login"
         self.devices_list_url = f"{self.base_url}/devices?all=false&per_page=200"
@@ -42,8 +51,8 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             entry.data.get(SCAN_INTERVAL_MINUTES, DEFAULT_SCAN_INTERVAL)
         )
         _LOGGER.debug(
-            "Coordinator for region %s, update interval: %s minutes -> %s",
-            self.region, interval, timedelta(minutes=interval)
+            "Coordinator for region %s, unit system %s, update interval: %s minutes -> %s",
+            self.region, self.unit_system, interval, timedelta(minutes=interval)
         )
         super().__init__(
             hass,
@@ -123,24 +132,44 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             prop = props.get(key, {})
             return prop.get("converted_value", default)
 
-        return {
+        # Helper to get measurement based on unit system
+        def get_measurement(prop_key, default=None):
+            if self.unit_system == UNIT_METRIC:
+                return get_prop_converted(prop_key, default)
+            else:
+                return get_prop_value(prop_key, "value", default)
+
+        # Debug logging for key sensors (optioneel)
+        test_keys = ["gallons_used_today", "total_outlet_water_gals", "treated_water_avail_gals", 
+                     "current_water_flow_gpm", "avg_salt_per_regen_lbs"]
+        for key in test_keys:
+            metric_val = get_prop_converted(key)
+            imperial_val = get_prop_value(key)
+            chosen_val = get_measurement(key)
+            _LOGGER.debug("Key %s: metric=%s, imperial=%s, chosen=%s", key, metric_val, imperial_val, chosen_val)
+
+        data = {
             "last_update": dt_util.now(),
             "salt_level_percent": wt.get("salt_level_percent"),
             "salt_level_rounded": wt.get("salt_level", {}).get("salt_level_percent_rounded"),
             "out_of_salt_days": get_prop_value("out_of_salt_estimate_days"),
             "low_salt_trip_days": get_prop_value("low_salt_trip_level_days"),
             "service_reminder": wts.get("service_reminder_message"),
-            "water_used_today": get_prop_converted("gallons_used_today"),
-            "total_water_used": wt.get("total_water_used", {}).get("value"),
-            "water_available": wt.get("treated_water_available", {}).get("value"),
-            "current_flow": get_prop_converted("current_water_flow_gpm"),
-            "avg_daily_use": get_prop_converted("avg_daily_use_gals"),
+
+            # Unit-dependent fields
+            "water_used_today": get_measurement("gallons_used_today"),
+            "total_water_used": get_measurement("total_outlet_water_gals"),
+            "water_available": get_measurement("treated_water_avail_gals"),
+            "current_flow": get_measurement("current_water_flow_gpm"),
+            "avg_daily_use": get_measurement("avg_daily_use_gals"),
+            "avg_salt_per_regen": get_measurement("avg_salt_per_regen_lbs"),
+
+            # Other fields
             "hardness": get_prop_value("hardness_grains"),
             "total_regens": get_prop_value("total_regens"),
             "manual_regens": get_prop_value("manual_regens"),
             "days_since_regen": wt.get("days_since_last_recharge") or get_prop_value("days_since_last_regen"),
             "avg_days_between_regens": get_prop_value("avg_days_between_regens"),
-            "avg_salt_per_regen": get_prop_converted("avg_salt_per_regen_lbs"),
             "model": wt.get("model") or get_prop_value("model_description"),
             "serial": device.get("serial_number"),
             "software_version": get_prop_value("base_software_version"),
@@ -154,7 +183,32 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             "salt_alert": wts.get("salt_level_alert", False),
             "leak_alert": wts.get("flow_monitor_alert", False),
             "error_alert": wts.get("error_code_alert", False),
+            "alarm_beeping": get_prop_value("alarm_is_beeping", default=False),
         }
+
+        # Rock removed since last regen: sla beide eenheden op
+        rock_metric = get_prop_converted("rock_removed_since_rech_lbs")
+        rock_imperial = get_prop_value("rock_removed_since_rech_lbs")
+        data["rock_removed_since_regen"] = rock_metric if self.unit_system == UNIT_METRIC else rock_imperial
+        data["rock_removed_since_regen_metric"] = rock_metric
+        data["rock_removed_since_regen_imperial"] = rock_imperial
+
+        # Total rock removed: sla beide eenheden op
+        total_rock_metric = get_prop_converted("total_rock_removed_lbs")
+        total_rock_imperial = get_prop_value("total_rock_removed_lbs")
+        data["total_rock_removed"] = total_rock_metric if self.unit_system == UNIT_METRIC else total_rock_imperial
+        data["total_rock_removed_metric"] = total_rock_metric
+        data["total_rock_removed_imperial"] = total_rock_imperial
+
+        # Total salt use: sla beide eenheden op
+        total_salt_metric = get_prop_converted("total_salt_use_lbs")
+        total_salt_imperial = get_prop_value("total_salt_use_lbs")
+        data["total_salt_use"] = total_salt_metric if self.unit_system == UNIT_METRIC else total_salt_imperial
+        data["total_salt_use_metric"] = total_salt_metric
+        data["total_salt_use_imperial"] = total_salt_imperial
+
+        _LOGGER.debug("Data assembled (unit system: %s)", self.unit_system)
+        return data
 
     async def _fetch_data(self):
         """Internal data fetching. Uses wake-up + detail if device ID known, else falls back to device list."""
@@ -168,14 +222,12 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         headers["Authorization"] = f"Bearer {self.token}"
 
         try:
-            # If we don't have a device ID yet, fetch the device list and extract ID + data
             if self.device_id is None:
                 device = await self._fetch_device_list(headers)
                 self.device_id = device.get("id")
                 _LOGGER.debug("Device ID obtained: %s", self.device_id)
                 return await self._parse_device_data(device)
 
-            # Device ID known: first send wake-up call to /live, then fetch fresh data from /detail-or-summary
             try:
                 live_url = f"{self.base_url}/devices/{self.device_id}/live"
                 await self._async_request("GET", live_url, headers=headers)
@@ -183,14 +235,12 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             except Exception as wake_err:
                 _LOGGER.warning("Wake-up call failed, continuing with data fetch: %s", wake_err)
 
-            # Fetch current data from detail-or-summary
             detail_url = f"{self.base_url}/devices/{self.device_id}/detail-or-summary"
             response = await self._async_request("GET", detail_url, headers=headers)
             response.raise_for_status()
             json_data = await response.json()
             _LOGGER.debug("Detail data received for device %s", self.device_id)
 
-            # Extract the device object from the response
             device = json_data.get("device")
             if not device:
                 raise UpdateFailed("No device data found in detail response")
