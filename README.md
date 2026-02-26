@@ -35,14 +35,14 @@ Reading new data only works after the local app has been started. I'm still look
 1. Ensure [HACS](https://hacs.xyz) is installed.
 2. Add this repository as a custom repository:
    - HACS → Integrations → three dots → **Custom repositories**
-   - Repository URL: `https://github.com/roeli1996/ha-ecowater-custom`
+   - Repository URL: `https://github.com/roeli1996/ha-ecowater-hydrolink`
    - Category: **Integration**
 3. Click **Install** on the Ecowater Hydrolink Custom page in HACS.
 4. Restart Home Assistant.
 
 ### Manual installation
 
-1. Download the `ecowater_hydrolink_custom` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-custom/releases).
+1. Download the `ecowater_hydrolink_custom` folder from the [latest release](https://github.com/roeli1996/ha-ecowater-hydrolink/releases).
 2. Place it in your `custom_components` directory.
 3. Restart Home Assistant.
 
