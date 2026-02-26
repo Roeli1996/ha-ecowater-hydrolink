@@ -1,0 +1,77 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ecowater Hydrolink Custom",
+        "description": "Introduza as suas credenciais Hydrolink Plus para ligar o seu descalcificador de água.",
+        "data": {
+          "username": "Nome de utilizador (Email)",
+          "password": "Palavra-passe",
+          "region": "Região",
+          "unit_system": "Sistema de unidades",
+          "scan_interval_minutes": "Intervalo de atualização (minutos)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Falha na ligação à API Hydrolink.",
+      "invalid_auth": "Nome de utilizador ou palavra-passe inválidos.",
+      "unknown": "Ocorreu um erro inesperado."
+    },
+    "abort": {
+      "already_configured": "Esta conta já está configurada."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Definições",
+        "description": "Ajuste a frequência de atualização e o sistema de unidades.",
+        "data": {
+          "unit_system": "Sistema de unidades",
+          "scan_interval_minutes": "Intervalo de atualização (minutos)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_update": { "name": "Última atualização" },
+      "salt_level_percent": { "name": "Nível de sal" },
+      "salt_level_rounded": { "name": "Nível de sal arredondado" },
+      "out_of_salt_days": { "name": "Dias até o sal acabar" },
+      "low_salt_trip_days": { "name": "Limiar de alarme de sal baixo" },
+      "service_reminder": { "name": "Lembrete de manutenção" },
+      "water_used_today": { "name": "Consumo de água hoje" },
+      "total_water_used": { "name": "Consumo total de água" },
+      "water_available": { "name": "Água tratada disponível" },
+      "current_flow": { "name": "Caudal atual" },
+      "avg_daily_use": { "name": "Consumo médio diário" },
+      "hardness": { "name": "Dureza" },
+      "total_regens": { "name": "Número total de regenerações" },
+      "manual_regens": { "name": "Regenerações manuais" },
+      "days_since_regen": { "name": "Dias desde a última regeneração" },
+      "avg_days_between_regens": { "name": "Dias médios entre regenerações" },
+      "avg_salt_per_regen": { "name": "Consumo médio de sal por regeneração" },
+      "model": { "name": "Modelo" },
+      "serial": { "name": "Número de série" },
+      "software_version": { "name": "Versão do software" },
+      "rssi": { "name": "Potência do sinal Wi-Fi" },
+      "wifi_ssid": { "name": "Rede Wi-Fi" },
+      "days_in_operation": { "name": "Dias em funcionamento" },
+      "power_outages": { "name": "Número de falhas de energia" },
+      "dealer_name": { "name": "Nome do distribuidor" },
+      "dealer_phone": { "name": "Telefone do distribuidor" },
+      "rock_removed_since_regen": { "name": "Dureza removida desde a última regeneração" },
+      "total_rock_removed": { "name": "Dureza total removida" },
+      "total_salt_use": { "name": "Consumo total de sal" }
+    },
+    "binary_sensor": {
+      "is_regenerating": { "name": "Estado da regeneração" },
+      "salt_alert": { "name": "Alarme de sal" },
+      "leak_alert": { "name": "Alarme de fuga" },
+      "error_alert": { "name": "Alarme de erro do sistema" },
+      "alarm_beeping": { "name": "Sinal sonoro de alarme" }
+    }
+  }
+}
