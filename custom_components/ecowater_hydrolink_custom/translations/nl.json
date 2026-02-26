@@ -8,6 +8,7 @@
           "username": "Gebruikersnaam (Email)",
           "password": "Wachtwoord",
           "region": "Regio",
+          "unit_system": "Eenheidssysteem",
           "scan_interval_minutes": "Update interval (minuten)"
         }
       }
@@ -25,8 +26,9 @@
     "step": {
       "init": {
         "title": "Instellingen",
-        "description": "Pas de update-frequentie van de data aan.",
+        "description": "Pas de update-frequentie en het eenheidssysteem aan.",
         "data": {
+          "unit_system": "Eenheidssysteem",
           "scan_interval_minutes": "Update interval (minuten)"
         }
       }
@@ -59,14 +61,17 @@
       "days_in_operation": { "name": "Dagen in werking" },
       "power_outages": { "name": "Aantal stroomonderbrekingen" },
       "dealer_name": { "name": "Dealer naam" },
-      "dealer_phone": { "name": "Dealer telefoon" }
+      "dealer_phone": { "name": "Dealer telefoon" },
+      "rock_removed_since_regen": { "name": "Verwijderde hardheid sinds laatste spoeling" },
+      "total_rock_removed": { "name": "Totaal verwijderde hardheid" },
+      "total_salt_use": { "name": "Totaal zoutverbruik" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regeneratie status" },
       "salt_alert": { "name": "Zout alarm" },
       "leak_alert": { "name": "Lekkage alarm" },
-      "conn_alert": { "name": "Verbindings alarm" },
-      "error_alert": { "name": "Systeem fout alarm" }
+      "error_alert": { "name": "Systeem fout alarm" },
+      "alarm_beeping": { "name": "Alarm zoemer" }
     }
   }
 }
