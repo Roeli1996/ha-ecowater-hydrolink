@@ -1,0 +1,77 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ecowater Hydrolink Custom",
+        "description": "Saisissez vos identifiants Hydrolink Plus pour connecter votre adoucisseur d'eau.",
+        "data": {
+          "username": "Nom d'utilisateur (Email)",
+          "password": "Mot de passe",
+          "region": "Région",
+          "unit_system": "Système d'unités",
+          "scan_interval_minutes": "Intervalle de mise à jour (minutes)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Échec de la connexion à l'API Hydrolink.",
+      "invalid_auth": "Nom d'utilisateur ou mot de passe invalide.",
+      "unknown": "Une erreur inattendue s'est produite."
+    },
+    "abort": {
+      "already_configured": "Ce compte est déjà configuré."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Paramètres",
+        "description": "Ajustez la fréquence de mise à jour et le système d'unités.",
+        "data": {
+          "unit_system": "Système d'unités",
+          "scan_interval_minutes": "Intervalle de mise à jour (minutes)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_update": { "name": "Dernière mise à jour" },
+      "salt_level_percent": { "name": "Niveau de sel" },
+      "salt_level_rounded": { "name": "Niveau de sel arrondi" },
+      "out_of_salt_days": { "name": "Jours avant épuisement du sel" },
+      "low_salt_trip_days": { "name": "Seuil d'alarme sel" },
+      "service_reminder": { "name": "Rappel d'entretien" },
+      "water_used_today": { "name": "Consommation d'eau aujourd'hui" },
+      "total_water_used": { "name": "Consommation d'eau totale" },
+      "water_available": { "name": "Eau adoucie disponible" },
+      "current_flow": { "name": "Débit actuel" },
+      "avg_daily_use": { "name": "Consommation quotidienne moyenne" },
+      "hardness": { "name": "Dureté" },
+      "total_regens": { "name": "Nombre total de régénérations" },
+      "manual_regens": { "name": "Régénérations manuelles" },
+      "days_since_regen": { "name": "Jours depuis la dernière régénération" },
+      "avg_days_between_regens": { "name": "Jours moyens entre régénérations" },
+      "avg_salt_per_regen": { "name": "Consommation moyenne de sel par régénération" },
+      "model": { "name": "Modèle" },
+      "serial": { "name": "Numéro de série" },
+      "software_version": { "name": "Version logicielle" },
+      "rssi": { "name": "Puissance du signal Wi-Fi" },
+      "wifi_ssid": { "name": "Réseau Wi-Fi" },
+      "days_in_operation": { "name": "Jours de fonctionnement" },
+      "power_outages": { "name": "Nombre de coupures de courant" },
+      "dealer_name": { "name": "Nom du revendeur" },
+      "dealer_phone": { "name": "Téléphone du revendeur" },
+      "rock_removed_since_regen": { "name": "Dureté éliminée depuis la dernière régénération" },
+      "total_rock_removed": { "name": "Dureté totale éliminée" },
+      "total_salt_use": { "name": "Consommation totale de sel" }
+    },
+    "binary_sensor": {
+      "is_regenerating": { "name": "État de régénération" },
+      "salt_alert": { "name": "Alarme sel" },
+      "leak_alert": { "name": "Alarme fuite" },
+      "error_alert": { "name": "Alarme erreur système" },
+      "alarm_beeping": { "name": "Avertisseur sonore" }
+    }
+  }
+}
