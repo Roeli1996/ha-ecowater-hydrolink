@@ -211,9 +211,9 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 **Note:** This integration is not officially affiliated with EcoWater or Hydrolink. Use at your own risk.
 
-[releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-custom?style=for-the-badge
-[releases]: https://github.com/roeli1996/ha-ecowater-custom/releases
-[license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-custom?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/v/release/roeli1996/ha-ecowater-hydrolink?style=for-the-badge
+[releases]: https://github.com/roeli1996/ha-ecowater-hydrolink/releases
+[license-shield]: https://img.shields.io/github/license/roeli1996/ha-ecowater-hydrolink?style=for-the-badge
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [author-shield]: https://img.shields.io/badge/Author-roeli1996-blue?style=for-the-badge
