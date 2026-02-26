@@ -1,7 +1,7 @@
 {
   "domain": "ecowater_hydrolink_custom",
   "name": "Ecowater Hydrolink Custom",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "documentation": "https://github.com/roeli1996/ha-ecowater-custom",
   "issue_tracker": "https://github.com/roeli1996/ha-ecowater-custom/issues",
   "dependencies": [],
@@ -10,4 +10,5 @@
   "config_flow": true,
   "requirements": ["aiohttp", "async_timeout"]
 }
+
 
