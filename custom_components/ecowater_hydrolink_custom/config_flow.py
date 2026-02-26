@@ -11,6 +11,9 @@ from .const import (
     CONF_REGION,
     REGION_EU,
     REGION_US,
+    CONF_UNIT_SYSTEM,
+    UNIT_METRIC,
+    UNIT_OPTIONS,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
 )
@@ -27,13 +30,11 @@ class EcowaterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Create the entry with the selected region
             return self.async_create_entry(
                 title="Ecowater Hydrolink Custom",
                 data=user_input
             )
 
-        # Schema with region selection
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_USERNAME): str,
@@ -44,6 +45,7 @@ class EcowaterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         REGION_US: "US / Other (app.hydrolinkhome.com)",
                     }
                 ),
+                vol.Required(CONF_UNIT_SYSTEM, default=UNIT_METRIC): vol.In(UNIT_OPTIONS),
                 vol.Optional(
                     SCAN_INTERVAL_MINUTES, default=DEFAULT_SCAN_INTERVAL
                 ): int,
@@ -59,21 +61,16 @@ class EcowaterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        """Return the options flow handler."""
         return EcowaterOptionsFlowHandler(config_entry)
 
-    async def async_migrate_entry(self, hass, config_entry: config_entries.ConfigEntry):
+    async def async_migrate_entry(self, hass, config_entry):
         """Migrate old entry."""
         _LOGGER.debug("Migrating from version %s", config_entry.version)
-
         if config_entry.version == 1:
-            # Version 1 had no region; add EU as default
-            new_data = {**config_entry.data}
-            new_data[CONF_REGION] = REGION_EU
+            new_data = {**config_entry.data, CONF_REGION: REGION_EU}
             config_entry.version = 2
             hass.config_entries.async_update_entry(config_entry, data=new_data)
             _LOGGER.debug("Migration to version 2 complete")
-
         return True
 
 
@@ -89,15 +86,20 @@ class EcowaterOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        # Determine current scan interval
-        current_value = self.config_entry.options.get(
+        # Determine current values
+        current_unit = self.config_entry.options.get(
+            CONF_UNIT_SYSTEM,
+            self.config_entry.data.get(CONF_UNIT_SYSTEM, UNIT_METRIC)
+        )
+        current_interval = self.config_entry.options.get(
             SCAN_INTERVAL_MINUTES,
             self.config_entry.data.get(SCAN_INTERVAL_MINUTES, DEFAULT_SCAN_INTERVAL)
         )
 
         data_schema = vol.Schema(
             {
-                vol.Optional(SCAN_INTERVAL_MINUTES, default=current_value): int,
+                vol.Required(CONF_UNIT_SYSTEM, default=current_unit): vol.In(UNIT_OPTIONS),
+                vol.Optional(SCAN_INTERVAL_MINUTES, default=current_interval): int,
             }
         )
 
