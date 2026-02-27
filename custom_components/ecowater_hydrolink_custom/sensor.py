@@ -60,7 +60,7 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
         "low_salt_trip_days": "mdi:calendar-alert",
         "service_reminder": "mdi:bell",
         "water_used_today": "mdi:water",
-        "total_water_used": "mdi:water-counter",
+        "total_water_used": "mdi:water",
         "water_available": "mdi:water-percent",
         "current_flow": "mdi:water",
         "avg_daily_use": "mdi:chart-line",
@@ -164,3 +164,4 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
             add_alternate("total_salt_use_metric", "total_salt_use_imperial", "kg", "lbs")
 
         return attrs
+
