@@ -169,6 +169,7 @@ This release introduces two major improvements: a new sensor that estimates your
 - Fully backward compatible; no breaking changes.
 - If you have manually customized icons, your settings will not be overwritten.
 - The new sensor and icons appear automatically after updating.
+- The calculated_daily_use resets to zero after each update.
 
 
 ### v1.3.1 – Added logo (cosmetic only)
