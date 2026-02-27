@@ -40,7 +40,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
         EcoWaterSensor(coordinator, "rock_removed_since_regen", "rock_removed_since_regen", "kg", "lbs", None, None),
         EcoWaterSensor(coordinator, "total_rock_removed", "total_rock_removed", "kg", "lbs", None, SensorStateClass.TOTAL_INCREASING),
         EcoWaterSensor(coordinator, "total_salt_use", "total_salt_use", "kg", "lbs", None, SensorStateClass.TOTAL_INCREASING),
-        # Nieuwe sensor: berekend dagverbruik
         EcoWaterSensor(coordinator, "calculated_daily_use", "calculated_daily_use", "L", "gal", SensorDeviceClass.WATER, SensorStateClass.TOTAL_INCREASING),
     ]
 
@@ -51,6 +50,40 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class EcoWaterSensor(CoordinatorEntity, SensorEntity):
     """Vertegenwoordigt een Ecowater sensor."""
+
+    # Icon mapping per sensor key
+    _icon_map = {
+        "last_update": "mdi:update",
+        "salt_level_percent": "mdi:beaker",
+        "salt_level_rounded": "mdi:beaker",
+        "out_of_salt_days": "mdi:calendar-alert",
+        "low_salt_trip_days": "mdi:calendar-alert",
+        "service_reminder": "mdi:bell",
+        "water_used_today": "mdi:water",
+        "total_water_used": "mdi:water-counter",
+        "water_available": "mdi:water-percent",
+        "current_flow": "mdi:water",
+        "avg_daily_use": "mdi:chart-line",
+        "hardness": "mdi:flask",
+        "total_regens": "mdi:counter",
+        "manual_regens": "mdi:counter",
+        "days_since_regen": "mdi:calendar",
+        "avg_days_between_regens": "mdi:calendar",
+        "avg_salt_per_regen": "mdi:scale",
+        "model": "mdi:chip",
+        "serial": "mdi:information-outline",
+        "software_version": "mdi:information-outline",
+        "rssi": "mdi:wifi",
+        "wifi_ssid": "mdi:wifi",
+        "days_in_operation": "mdi:calendar",
+        "power_outages": "mdi:flash",
+        "dealer_name": "mdi:phone",
+        "dealer_phone": "mdi:phone",
+        "rock_removed_since_regen": "mdi:weight",
+        "total_rock_removed": "mdi:weight",
+        "total_salt_use": "mdi:weight",
+        "calculated_daily_use": "mdi:calculator",
+    }
 
     def __init__(self, coordinator, trans_key, data_key, unit_metric, unit_imperial, device_class, state_class):
         super().__init__(coordinator)
@@ -68,6 +101,11 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
             "manufacturer": "EcoWater",
             "model": coordinator.data.get("model") if coordinator.data else None,
         }
+
+    @property
+    def icon(self):
+        """Bepaal het icoon op basis van de sensor key."""
+        return self._icon_map.get(self._key, "mdi:help")
 
     @property
     def native_value(self):
@@ -124,15 +162,5 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
             add_alternate("total_rock_removed_metric", "total_rock_removed_imperial", "kg", "lbs")
         elif self._key == "total_salt_use":
             add_alternate("total_salt_use_metric", "total_salt_use_imperial", "kg", "lbs")
-        elif self._key == "water_used_today":
-            # Deze sensor heeft geen aparte metric/imperial keys? In de coordinator wordt alleen de gekozen waarde opgeslagen.
-            # We kunnen hier de alternatieve waarde niet tonen omdat we beide eenheden niet opslaan voor deze sensor.
-            # Maar we kunnen eventueel de ruwe waarden uit de properties halen? Dat is complex.
-            # Voor nu laten we dit achterwege.
-            pass
-        elif self._key == "calculated_daily_use":
-            # Omdat we geen aparte metric/imperial keys hebben voor de berekende waarde,
-            # kunnen we geen alternatieve eenheid tonen. De waarde is al in de gekozen eenheid.
-            pass
 
         return attrs
