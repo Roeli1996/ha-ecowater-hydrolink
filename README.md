@@ -153,20 +153,22 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
-#### v1.3.2 – Added calculated daily usage sensor
+### v1.3.2 – Added calculated daily usage sensor and custom icons
 
-This release adds a new sensor `calculated_daily_use` that estimates your daily water consumption based on the total water used. It provides a reliable alternative for users who experience delays in the official `water_used_today` sensor.
+This release introduces two major improvements: a new sensor that estimates your daily water consumption, and meaningful icons for all sensors to enhance your Home Assistant experience.
 
 #### ✨ New features
-- **`calculated_daily_use` sensor** – shows an estimate of today's water usage (units follow your selected unit system: liters or gallons).
-- **Automatic reset at midnight** – the counter resets to zero each day.
+- **`calculated_daily_use` sensor** – estimates today's water usage based on total water used, resetting automatically at midnight. Units follow your selected unit system (liters or gallons).
+- **Custom icons** – every sensor and binary sensor now has a dedicated icon (e.g., water drop for usage, beaker for salt level, alert symbols for problems), making them easily recognizable in dashboards and entity lists.
 
 #### 🔧 Improvements
-- Minor code optimizations and enhanced logging for better debugging.
+- The new sensor provides a reliable alternative for users who experience delays in the official `water_used_today` sensor.
+- Icons improve visual identification without any configuration changes.
 
 #### 📝 Notes
-- No breaking changes; update is safe for all users.
-- The new sensor appears automatically after updating.
+- Fully backward compatible; no breaking changes.
+- If you have manually customized icons, your settings will not be overwritten.
+- The new sensor and icons appear automatically after updating.
 
 
 ### v1.3.1 – Added logo (cosmetic only)
