@@ -37,11 +37,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
         EcoWaterSensor(coordinator, "power_outages", "power_outages", "keer", "keer", None, SensorStateClass.TOTAL_INCREASING),
         EcoWaterSensor(coordinator, "dealer_name", "dealer_name", None, None, None, None),
         EcoWaterSensor(coordinator, "dealer_phone", "dealer_phone", None, None, None, None),
-        # Nieuwe sensoren (eerder toegevoegd)
         EcoWaterSensor(coordinator, "rock_removed_since_regen", "rock_removed_since_regen", "kg", "lbs", None, None),
-        # Extra nieuwe sensoren
         EcoWaterSensor(coordinator, "total_rock_removed", "total_rock_removed", "kg", "lbs", None, SensorStateClass.TOTAL_INCREASING),
         EcoWaterSensor(coordinator, "total_salt_use", "total_salt_use", "kg", "lbs", None, SensorStateClass.TOTAL_INCREASING),
+        # Nieuwe sensor: berekend dagverbruik
+        EcoWaterSensor(coordinator, "calculated_daily_use", "calculated_daily_use", "L", "gal", SensorDeviceClass.WATER, SensorStateClass.TOTAL_INCREASING),
     ]
 
     _LOGGER.debug("Aantal sensors om toe te voegen: %d", len(entities))
@@ -109,6 +109,8 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
         def add_alternate(key_metric, key_imperial, unit_metric, unit_imperial):
             metric = self.coordinator.data.get(key_metric)
             imperial = self.coordinator.data.get(key_imperial)
+            if metric is None or imperial is None:
+                return
             if self.coordinator.unit_system == UNIT_METRIC:
                 attrs["imperial_value"] = imperial
                 attrs["imperial_unit"] = unit_imperial
@@ -122,5 +124,15 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
             add_alternate("total_rock_removed_metric", "total_rock_removed_imperial", "kg", "lbs")
         elif self._key == "total_salt_use":
             add_alternate("total_salt_use_metric", "total_salt_use_imperial", "kg", "lbs")
+        elif self._key == "water_used_today":
+            # Deze sensor heeft geen aparte metric/imperial keys? In de coordinator wordt alleen de gekozen waarde opgeslagen.
+            # We kunnen hier de alternatieve waarde niet tonen omdat we beide eenheden niet opslaan voor deze sensor.
+            # Maar we kunnen eventueel de ruwe waarden uit de properties halen? Dat is complex.
+            # Voor nu laten we dit achterwege.
+            pass
+        elif self._key == "calculated_daily_use":
+            # Omdat we geen aparte metric/imperial keys hebben voor de berekende waarde,
+            # kunnen we geen alternatieve eenheid tonen. De waarde is al in de gekozen eenheid.
+            pass
 
         return attrs
