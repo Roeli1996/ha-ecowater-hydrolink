@@ -64,7 +64,8 @@
       "dealer_phone": { "name": "Händlertelefon" },
       "rock_removed_since_regen": { "name": "Entfernte Härte seit letzter Regeneration" },
       "total_rock_removed": { "name": "Gesamte entfernte Härte" },
-      "total_salt_use": { "name": "Gesamtsalzverbrauch" }
+      "total_salt_use": { "name": "Gesamtsalzverbrauch" },
+      "calculated_daily_use": { "name": "Berechneter Tagesverbrauch" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regenerationsstatus" },
