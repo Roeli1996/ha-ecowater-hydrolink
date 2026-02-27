@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
-        "description": "Voer je Hydrolink Plus inloggegevens in om verbinding te maken met je waterontharder.",
+        "description": "Voer je Hydrolink inloggegevens in om verbinding te maken met je waterontharder.",
         "data": {
           "username": "Gebruikersnaam (Email)",
           "password": "Wachtwoord",
@@ -64,7 +64,8 @@
       "dealer_phone": { "name": "Dealer telefoon" },
       "rock_removed_since_regen": { "name": "Verwijderde hardheid sinds laatste spoeling" },
       "total_rock_removed": { "name": "Totaal verwijderde hardheid" },
-      "total_salt_use": { "name": "Totaal zoutverbruik" }
+      "total_salt_use": { "name": "Totaal zoutverbruik" },
+      "calculated_daily_use": { "name": "Berekend dagelijks verbruik" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regeneratie status" },
