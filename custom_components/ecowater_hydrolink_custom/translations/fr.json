@@ -64,7 +64,8 @@
       "dealer_phone": { "name": "Téléphone du revendeur" },
       "rock_removed_since_regen": { "name": "Dureté éliminée depuis la dernière régénération" },
       "total_rock_removed": { "name": "Dureté totale éliminée" },
-      "total_salt_use": { "name": "Consommation totale de sel" }
+      "total_salt_use": { "name": "Consommation totale de sel" },
+      "calculated_daily_use": { "name": "Consommation quotidienne calculée" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "État de régénération" },
