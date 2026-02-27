@@ -118,7 +118,7 @@ The integration adds the following sensors (all grouped under one device). Units
 | `total_salt_use` | Total salt consumed over lifetime | kg | | `imperial_value` / `metric_value` |
 | `calculated_daily_use` | Total calculated water use for today | L | Water | `imperial_value` / `metric_value` |
 
-> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh.
+> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The calculated_daily_use resets to zero after each update.
 
 ## 🚨 Binary sensors
 
