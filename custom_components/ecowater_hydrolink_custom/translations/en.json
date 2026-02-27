@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
-        "description": "Enter your Hydrolink Plus login credentials to connect to your water softener.",
+        "description": "Enter your Hydrolink login credentials to connect to your water softener.",
         "data": {
           "username": "Username (Email)",
           "password": "Password",
@@ -64,7 +64,8 @@
       "dealer_phone": { "name": "Dealer phone" },
       "rock_removed_since_regen": { "name": "Rock removed since last regeneration" },
       "total_rock_removed": { "name": "Total rock removed" },
-      "total_salt_use": { "name": "Total salt used" }
+      "total_salt_use": { "name": "Total salt used" },
+      "calculated_daily_use": { "name": "Calculated daily usage" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regeneration status" },
