@@ -152,6 +152,22 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
+#### v1.3.2 – Added calculated daily usage sensor
+
+This release adds a new sensor `calculated_daily_use` that estimates your daily water consumption based on the total water used. It provides a reliable alternative for users who experience delays in the official `water_used_today` sensor.
+
+#### ✨ New features
+- **`calculated_daily_use` sensor** – shows an estimate of today's water usage (units follow your selected unit system: liters or gallons).
+- **Automatic reset at midnight** – the counter resets to zero each day.
+
+#### 🔧 Improvements
+- Minor code optimizations and enhanced logging for better debugging.
+
+#### 📝 Notes
+- No breaking changes; update is safe for all users.
+- The new sensor appears automatically after updating.
+
+
 ### v1.3.1 – Added logo (cosmetic only)
 
 This release adds a logo to the integration for a nicer appearance in the Home Assistant interface.
