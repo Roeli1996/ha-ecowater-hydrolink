@@ -64,7 +64,8 @@
       "dealer_phone": { "name": "Telefon dealera" },
       "rock_removed_since_regen": { "name": "Usunięta twardość od ostatniej regeneracji" },
       "total_rock_removed": { "name": "Całkowita usunięta twardość" },
-      "total_salt_use": { "name": "Całkowite zużycie soli" }
+      "total_salt_use": { "name": "Całkowite zużycie soli" },
+      "calculated_daily_use": { "name": "Consumo giornaliero calcolato" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Stan regeneracji" },
