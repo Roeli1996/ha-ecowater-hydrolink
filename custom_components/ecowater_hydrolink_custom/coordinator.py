@@ -46,6 +46,11 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         self.devices_list_url = f"{self.base_url}/devices?all=false&per_page=200"
         self.device_id = None
 
+        # Variabelen voor berekend dagverbruik
+        self._previous_total = None
+        self._daily_total = 0.0
+        self._last_date = None
+
         interval = entry.options.get(
             SCAN_INTERVAL_MINUTES,
             entry.data.get(SCAN_INTERVAL_MINUTES, DEFAULT_SCAN_INTERVAL)
@@ -206,6 +211,39 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         data["total_salt_use"] = total_salt_metric if self.unit_system == UNIT_METRIC else total_salt_imperial
         data["total_salt_use_metric"] = total_salt_metric
         data["total_salt_use_imperial"] = total_salt_imperial
+
+        # ===== Berekend dagverbruik =====
+        current_total = data.get("total_water_used")
+        if current_total is not None:
+            # Controleer of de dag veranderd is (reset om middernacht)
+            now = dt_util.now()
+            if self._last_date is None:
+                self._last_date = now.date()
+                self._daily_total = 0.0
+            elif self._last_date != now.date():
+                # Nieuwe dag: reset de teller
+                self._daily_total = 0.0
+                self._last_date = now.date()
+
+            # Als we een vorige waarde hebben, bereken dan het verschil en tel op
+            if self._previous_total is not None:
+                delta = current_total - self._previous_total
+                # Voorkom negatieve delta (kan gebeuren als de teller reset of als er een fout is)
+                if delta > 0:
+                    self._daily_total += delta
+                elif delta < 0:
+                    _LOGGER.warning("Negative delta detected: previous_total=%s, current_total=%s", self._previous_total, current_total)
+                    # Mogelijk is de teller gereset? Dan kunnen we de dagteller niet zomaar aanpassen.
+                    # Voor nu negeren we negatieve delta.
+                    pass
+
+            # Sla de huidige waarde op voor de volgende keer
+            self._previous_total = current_total
+
+            # Voeg de berekende dagwaarde toe aan data
+            data["calculated_daily_use"] = self._daily_total
+        else:
+            data["calculated_daily_use"] = 0
 
         _LOGGER.debug("Data assembled (unit system: %s)", self.unit_system)
         return data
