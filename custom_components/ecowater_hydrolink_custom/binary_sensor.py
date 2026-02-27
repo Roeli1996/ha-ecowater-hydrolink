@@ -26,6 +26,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class EcoWaterBinarySensor(CoordinatorEntity, BinarySensorEntity):
     """Vertegenwoordigt een Ecowater binary sensor."""
 
+    # Icon mapping per binary sensor key
+    _icon_map = {
+        "is_regenerating": "mdi:refresh",
+        "salt_alert": "mdi:alarm",
+        "leak_alert": "mdi:pipe-leak",
+        "error_alert": "mdi:alert-circle",
+        "alarm_beeping": "mdi:bell-ring",
+    }
+
     def __init__(self, coordinator, data_key, device_class):
         super().__init__(coordinator)
         self._data_key = data_key
@@ -39,6 +48,11 @@ class EcoWaterBinarySensor(CoordinatorEntity, BinarySensorEntity):
             "manufacturer": "EcoWater",
             "model": coordinator.data.get("model") if coordinator.data else None,
         }
+
+    @property
+    def icon(self):
+        """Bepaal het icoon op basis van de sensor key."""
+        return self._icon_map.get(self._data_key, "mdi:help")
 
     @property
     def is_on(self):
