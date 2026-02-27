@@ -64,7 +64,8 @@
       "dealer_phone": { "name": "Telefono rivenditore" },
       "rock_removed_since_regen": { "name": "Durezza rimossa dall'ultima rigenerazione" },
       "total_rock_removed": { "name": "Durezza totale rimossa" },
-      "total_salt_use": { "name": "Consumo totale di sale" }
+      "total_salt_use": { "name": "Consumo totale di sale" },
+      "calculated_daily_use": { "name": "Consumo giornaliero calcolato" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Stato rigenerazione" },
