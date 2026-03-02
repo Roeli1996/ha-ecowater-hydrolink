@@ -153,6 +153,18 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
+### v1.3.3 – Translating Dutch terms ('keer' and 'dagen') - 2026-03-02
+
+This release only fixes issue 3:
+Hard-coded translations of 'keer' and 'dagen'
+
+#### 🔧 Improvements
+- Translations
+
+#### 📝 Notes
+- The `calculated_daily_use` resets to zero after each update.
+
+
 ### v1.3.2 – Added calculated daily usage sensor and custom icons
 
 This release introduces two major improvements: a new sensor that estimates your daily water consumption, and meaningful icons for all sensors to enhance your Home Assistant experience.
@@ -169,7 +181,7 @@ This release introduces two major improvements: a new sensor that estimates your
 - Fully backward compatible; no breaking changes.
 - If you have manually customized icons, your settings will not be overwritten.
 - The new sensor and icons appear automatically after updating.
-- The calculated_daily_use resets to zero after each update.
+- The `calculated_daily_use` resets to zero after each update.
 
 
 ### v1.3.1 – Added logo (cosmetic only)
