@@ -43,6 +43,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
     - Data retrieval from /detail-or-summary
     - Unit system and language awareness
     - Calculation of daily usage from total water used
+    - Calculation of water used in the last regeneration cycle
     """
 
     def __init__(self, hass, entry):
@@ -63,7 +64,6 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         )
 
         # Store the Home Assistant language (first two letters) for unit translations
-        # This allows sensors to display e.g. "days" in English, "dagen" in Dutch, etc.
         self.language = hass.config.language[:2]
 
         _LOGGER.debug(
@@ -83,7 +83,12 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         # Variables for calculated daily usage (derived from total_water_used)
         self._previous_total = None   # Last known total water value
         self._daily_total = 0.0       # Accumulated usage since midnight
-        self._last_date = None         # Date of the last update (used for reset)
+        self._last_date = None        # Date of the last update (used for reset)
+
+        # Variables for water used in the last regeneration
+        self._prev_regen = False           # Previous regeneration state (True/False)
+        self._water_at_regen_start = None  # Total water at start of regeneration
+        self._water_used_last_regen = 0.0  # Water used in the last regeneration cycle
 
         # Update interval (in minutes) – from options, falling back to data
         interval = entry.options.get(
@@ -329,6 +334,35 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             data["calculated_daily_use"] = self._daily_total
         else:
             data["calculated_daily_use"] = 0
+
+        # ----- Water used in the last regeneration -----
+        # This calculates the amount of water consumed during the most recent regeneration cycle.
+        # It uses the transition of the 'is_regenerating' flag to capture total water at start and end.
+        current_regen = data.get("is_regenerating", False)
+        current_total_water = data.get("total_water_used")
+
+        if current_total_water is not None:
+            # Regeneration started: transition False -> True
+            if not self._prev_regen and current_regen:
+                self._water_at_regen_start = current_total_water
+                _LOGGER.debug("Regeneration started, water total at start: %s", self._water_at_regen_start)
+
+            # Regeneration ended: transition True -> False
+            elif self._prev_regen and not current_regen:
+                if self._water_at_regen_start is not None:
+                    self._water_used_last_regen = current_total_water - self._water_at_regen_start
+                    if self._water_used_last_regen < 0:
+                        self._water_used_last_regen = 0.0
+                    _LOGGER.debug("Regeneration ended, water used: %s", self._water_used_last_regen)
+                    self._water_at_regen_start = None
+                else:
+                    _LOGGER.warning("Regeneration ended but start value missing")
+
+            # Update previous state for next run
+            self._prev_regen = current_regen
+
+        # Store the calculated value (already in the current unit system)
+        data["water_used_in_last_regen"] = self._water_used_last_regen
 
         _LOGGER.debug("Data assembled (unit system: %s)", self.unit_system)
         return data

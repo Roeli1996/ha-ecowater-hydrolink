@@ -96,7 +96,7 @@ The integration adds the following sensors (all grouped under one device). Units
 | `water_used_today` | Water usage today | L | water | `imperial_value` / `metric_value` |
 | `total_water_used` | Total water usage since installation | L | water | `imperial_value` / `metric_value` |
 | `water_available` | Amount of treated water still available | L | water | `imperial_value` / `metric_value` |
-| `current_flow` | Current flow rate | L/min | | `imperial_value` / `metric_value` |
+| `current_flow` | Current flow rate | L/min | water | `imperial_value` / `metric_value` |
 | `avg_daily_use` | Average daily water usage | L | water | `imperial_value` / `metric_value` |
 | `hardness` | Water hardness setting | gpg | | – |
 | `total_regens` | Total number of regenerations | | | – |
@@ -116,9 +116,10 @@ The integration adds the following sensors (all grouped under one device). Units
 | `rock_removed_since_regen` | Hardness removed since last regeneration | kg | | `imperial_value` / `metric_value` |
 | `total_rock_removed` | Total hardness removed over lifetime | kg | | `imperial_value` / `metric_value` |
 | `total_salt_use` | Total salt consumed over lifetime | kg | | `imperial_value` / `metric_value` |
-| `calculated_daily_use` | Total calculated water use for today | L | Water | `imperial_value` / `metric_value` |
+| `calculated_daily_use` | Total calculated water use for today | L | water | `imperial_value` / `metric_value` |
+| `water_used_in_last_regen` | Water used during the last regeneration cycle (experimental – needs verification) | L | water | – |
 
-> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The calculated_daily_use resets to zero after each update.
+> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The `calculated_daily_use` resets to zero after each update. The `water_used_in_last_regen` sensor is experimental and its accuracy depends on whether the device reports total water usage during regeneration (this has not yet been confirmed). It will display `0` until a regeneration cycle has completed after updating.
 
 ## 🚨 Binary sensors
 
@@ -150,8 +151,22 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ### Known limitations
 - Not tested on multiple devices under a single account.
+- The `water_used_in_last_regen` sensor is experimental; its accuracy is not guaranteed and depends on the device's update behavior during regeneration.
 
 ## 📝 Changelog
+
+### v1.3.4 – Added water usage during last regeneration sensor (experimental) - 2026-06-19
+
+This release adds a new sensor that tracks the amount of water consumed during the most recent regeneration cycle. **Please note:** this feature is experimental and its accuracy depends on whether the device updates total water usage during regeneration – this has not yet been verified.
+
+#### ✨ New features
+- **`water_used_in_last_regen` sensor** – shows the water usage (in liters or gallons) during the last regeneration. The value is calculated by comparing the total water used at the start and end of a regeneration cycle.
+- **Added device class `water`** to the `current_flow` sensor for better icon and history representation.
+
+#### 📝 Notes
+- The new sensor will display `0` until a regeneration has occurred after updating.
+- Fully backward compatible; no configuration changes needed.
+- This sensor is experimental – please report any issues with its accuracy.
 
 ### v1.3.3 – Translating Dutch terms ('keer' and 'dagen') - 2026-03-02
 

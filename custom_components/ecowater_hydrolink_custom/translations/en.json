@@ -65,7 +65,8 @@
       "rock_removed_since_regen": { "name": "Rock removed since last regeneration" },
       "total_rock_removed": { "name": "Total rock removed" },
       "total_salt_use": { "name": "Total salt used" },
-      "calculated_daily_use": { "name": "Calculated daily usage" }
+      "calculated_daily_use": { "name": "Calculated daily usage" },
+      "water_used_in_last_regen": { "name": "Water used in last regeneration" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regeneration status" },
