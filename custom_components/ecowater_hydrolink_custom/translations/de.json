@@ -65,7 +65,8 @@
       "rock_removed_since_regen": { "name": "Entfernte Härte seit letzter Regeneration" },
       "total_rock_removed": { "name": "Gesamte entfernte Härte" },
       "total_salt_use": { "name": "Gesamtsalzverbrauch" },
-      "calculated_daily_use": { "name": "Berechneter Tagesverbrauch" }
+      "calculated_daily_use": { "name": "Berechneter Tagesverbrauch" },
+      "water_used_in_last_regen": { "name": "Wasserverbrauch während der letzten Regeneration" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regenerationsstatus" },
