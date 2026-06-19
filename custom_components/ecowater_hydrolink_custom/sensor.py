@@ -205,6 +205,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
             coordinator, "calculated_daily_use", "calculated_daily_use",
             "L", "gal", SensorDeviceClass.WATER, SensorStateClass.TOTAL_INCREASING
         ),
+        # NEW: Water used in the last regeneration cycle
+        EcoWaterSensor(
+            coordinator, "water_used_in_last_regen", "water_used_in_last_regen",
+            "L", "gal", SensorDeviceClass.WATER, None
+        ),
     ]
 
     _LOGGER.debug("Number of sensors to add: %d", len(entities))
@@ -253,6 +258,7 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
         "total_rock_removed": "mdi:weight",
         "total_salt_use": "mdi:weight",
         "calculated_daily_use": "mdi:calculator",
+        "water_used_in_last_regen": "mdi:water-sync",
     }
 
     def __init__(self, coordinator, trans_key, data_key, unit_metric, unit_imperial, device_class, state_class):
