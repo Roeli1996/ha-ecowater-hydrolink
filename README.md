@@ -155,7 +155,7 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
-### v1.3.4 – Added water usage during last regeneration sensor (experimental) - 2026-06-19
+### v1.4.0 – Added water usage during last regeneration sensor (experimental) - 2026-06-19
 
 This release adds a new sensor that tracks the amount of water consumed during the most recent regeneration cycle. **Please note:** this feature is experimental and its accuracy depends on whether the device updates total water usage during regeneration – this has not yet been verified.
 
