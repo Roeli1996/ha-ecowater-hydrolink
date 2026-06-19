@@ -65,7 +65,8 @@
       "rock_removed_since_regen": { "name": "Verwijderde hardheid sinds laatste spoeling" },
       "total_rock_removed": { "name": "Totaal verwijderde hardheid" },
       "total_salt_use": { "name": "Totaal zoutverbruik" },
-      "calculated_daily_use": { "name": "Berekend dagelijks verbruik" }
+      "calculated_daily_use": { "name": "Berekend dagelijks verbruik" },
+      "water_used_in_last_regen": { "name": "Waterverbruik tijdens laatste regeneratie" }
     },
     "binary_sensor": {
       "is_regenerating": { "name": "Regeneratie status" },
