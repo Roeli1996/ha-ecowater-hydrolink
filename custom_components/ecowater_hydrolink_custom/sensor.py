@@ -120,7 +120,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         ),
         EcoWaterSensor(
             coordinator, "current_flow", "current_flow",
-            "L/min", "gpm", None, SensorStateClass.MEASUREMENT
+            "L/min", "gpm", SensorDeviceClass.WATER, SensorStateClass.MEASUREMENT
         ),
         EcoWaterSensor(
             coordinator, "avg_daily_use", "avg_daily_use",
