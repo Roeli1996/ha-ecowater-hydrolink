@@ -8,7 +8,6 @@ import logging
 import asyncio
 from datetime import timedelta
 
-import aiohttp
 import async_timeout
 from aiohttp.client_exceptions import ClientConnectorDNSError, ClientError
 
@@ -25,7 +24,7 @@ from .const import (
     CONF_PASSWORD,
     CONF_UNIT_SYSTEM,
     UNIT_METRIC,
-    HEADERS,
+    headers_for_region,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
 )
@@ -142,7 +141,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
                 else:
                     _LOGGER.error("Max retries reached for %s %s", method, url)
                     raise
-            except Exception as err:
+            except Exception:
                 _LOGGER.exception("Unexpected error on %s %s", method, url)
                 raise
 
@@ -158,9 +157,15 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         }
         try:
             response = await self._async_request(
-                "POST", self.login_url, json=auth_payload, headers=HEADERS
+                "POST", self.login_url, json=auth_payload, headers=headers_for_region(self.region)
             )
-            response.raise_for_status()
+            if response.status != 200:
+                body = await response.text()
+                _LOGGER.error(
+                    "Ecowater login failed with status %s for region %s: %s",
+                    response.status, self.region, body
+                )
+                return None
             data = await response.json()
             token = data.get("access_token") or data.get("token")
             if token:
@@ -168,7 +173,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             else:
                 _LOGGER.error("No token in response: %s", data)
             return token
-        except Exception as ex:
+        except Exception:
             _LOGGER.exception("Authentication failed for Ecowater")
             return None
 
@@ -386,7 +391,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         if not self.token:
             raise UpdateFailed("Could not log in to Ecowater (no token)")
 
-        headers = HEADERS.copy()
+        headers = headers_for_region(self.region)
         headers["Authorization"] = f"Bearer {self.token}"
 
         try:
