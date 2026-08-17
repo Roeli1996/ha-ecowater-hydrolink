@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Kies welke EcoWater app je waterontharder gebruikt.",
+        "data": {
+          "backend": "Cloud platform / app"
+        }
+      },
+      "hydrolink": {
+        "title": "Hydrolink inloggen",
         "description": "Voer je Hydrolink inloggegevens in om verbinding te maken met je waterontharder.",
         "data": {
           "username": "Gebruikersnaam (Email)",
@@ -11,10 +18,20 @@
           "unit_system": "Eenheidssysteem",
           "scan_interval_minutes": "Update interval (minuten)"
         }
+      },
+      "iqua": {
+        "title": "iQua inloggen",
+        "description": "Voer je iQua inloggegevens en het serienummer van je apparaat in (o.a. voor Aquahome Duo Smart). Het serienummer vind je in de iQua app bij de instellingen/info van je apparaat.",
+        "data": {
+          "username": "Gebruikersnaam (Email)",
+          "password": "Wachtwoord",
+          "device_serial_number": "Serienummer apparaat",
+          "scan_interval_minutes": "Update interval (minuten)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Verbinding met de Hydrolink API mislukt.",
+      "cannot_connect": "Verbinding met de API mislukt.",
       "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord.",
       "unknown": "Er is een onverwachte fout opgetreden."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Zout alarm" },
       "leak_alert": { "name": "Lekkage alarm" },
       "error_alert": { "name": "Systeem fout alarm" },
-      "alarm_beeping": { "name": "Alarm zoemer" }
+      "alarm_beeping": { "name": "Alarm zoemer" },
+      "connectivity": { "name": "Verbinding" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Water afsluitklep" }
     }
   }
 }

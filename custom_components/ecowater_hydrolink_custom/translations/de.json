@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Wählen Sie, welche EcoWater-App Ihr Wasserenthärter verwendet.",
+        "data": {
+          "backend": "Cloud-Plattform / App"
+        }
+      },
+      "hydrolink": {
+        "title": "Hydrolink-Anmeldung",
         "description": "Geben Sie Ihre Hydrolink Plus Anmeldedaten ein, um eine Verbindung zu Ihrem Wasserenthärter herzustellen.",
         "data": {
           "username": "Benutzername (E-Mail)",
@@ -11,10 +18,20 @@
           "unit_system": "Einheitensystem",
           "scan_interval_minutes": "Aktualisierungsintervall (Minuten)"
         }
+      },
+      "iqua": {
+        "title": "iQua-Anmeldung",
+        "description": "Geben Sie Ihre iQua-Anmeldedaten und die Seriennummer Ihres Geräts ein (z. B. für Aquahome Duo Smart). Die Seriennummer finden Sie in der iQua-App unter den Geräteinformationen/-einstellungen.",
+        "data": {
+          "username": "Benutzername (E-Mail)",
+          "password": "Passwort",
+          "device_serial_number": "Seriennummer des Geräts",
+          "scan_interval_minutes": "Aktualisierungsintervall (Minuten)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Verbindung zur Hydrolink-API fehlgeschlagen.",
+      "cannot_connect": "Verbindung zur API fehlgeschlagen.",
       "invalid_auth": "Ungültiger Benutzername oder Passwort.",
       "unknown": "Ein unerwarteter Fehler ist aufgetreten."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Salzalarm" },
       "leak_alert": { "name": "Leckagealarm" },
       "error_alert": { "name": "Systemfehleralarm" },
-      "alarm_beeping": { "name": "Alarmsummer" }
+      "alarm_beeping": { "name": "Alarmsummer" },
+      "connectivity": { "name": "Verbindung" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Wasserabsperrventil" }
     }
   }
 }

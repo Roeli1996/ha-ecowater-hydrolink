@@ -394,5 +394,11 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
                 "total_salt_use_imperial",
                 "kg", "lbs"
             )
+        elif self._key == "salt_level_percent":
+            # Only populated on the iQua backend; the unit of this raw value
+            # has not been confirmed against a real device.
+            raw_tenths = self.coordinator.data.get("salt_level_raw_tenths")
+            if raw_tenths is not None:
+                attrs["raw_tenths"] = raw_tenths
 
         return attrs

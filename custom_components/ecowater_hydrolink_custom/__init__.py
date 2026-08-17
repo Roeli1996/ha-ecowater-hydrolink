@@ -4,14 +4,19 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
-from .const import DOMAIN, PLATFORMS
+from .const import DOMAIN, PLATFORMS, CONF_BACKEND, BACKEND_HYDROLINK, BACKEND_IQUA
 from .coordinator import EcowaterCoordinator
+from .iqua_coordinator import IquaCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Ecowater Hydrolink Custom from a config entry."""
-    coordinator = EcowaterCoordinator(hass, entry)
+    backend = entry.data.get(CONF_BACKEND, BACKEND_HYDROLINK)
+    if backend == BACKEND_IQUA:
+        coordinator = IquaCoordinator(hass, entry)
+    else:
+        coordinator = EcowaterCoordinator(hass, entry)
 
     try:
         await coordinator.async_config_entry_first_refresh()

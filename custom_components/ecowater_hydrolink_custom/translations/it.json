@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Seleziona quale app EcoWater utilizza il tuo addolcitore d'acqua.",
+        "data": {
+          "backend": "Piattaforma cloud / app"
+        }
+      },
+      "hydrolink": {
+        "title": "Accesso Hydrolink",
         "description": "Inserisci le tue credenziali Hydrolink Plus per connettere il tuo addolcitore d'acqua.",
         "data": {
           "username": "Nome utente (Email)",
@@ -11,10 +18,20 @@
           "unit_system": "Sistema di unità",
           "scan_interval_minutes": "Intervallo di aggiornamento (minuti)"
         }
+      },
+      "iqua": {
+        "title": "Accesso iQua",
+        "description": "Inserisci le tue credenziali iQua e il numero di serie del dispositivo (ad es. per Aquahome Duo Smart). Il numero di serie si trova nell'app iQua, nelle informazioni/impostazioni del dispositivo.",
+        "data": {
+          "username": "Nome utente (Email)",
+          "password": "Password",
+          "device_serial_number": "Numero di serie del dispositivo",
+          "scan_interval_minutes": "Intervallo di aggiornamento (minuti)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Impossibile connettersi all'API Hydrolink.",
+      "cannot_connect": "Impossibile connettersi all'API.",
       "invalid_auth": "Nome utente o password non validi.",
       "unknown": "Si è verificato un errore imprevisto."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Allarme sale" },
       "leak_alert": { "name": "Allarme perdita" },
       "error_alert": { "name": "Allarme errore sistema" },
-      "alarm_beeping": { "name": "Cicalino allarme" }
+      "alarm_beeping": { "name": "Cicalino allarme" },
+      "connectivity": { "name": "Connettività" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Valvola di intercettazione acqua" }
     }
   }
 }
