@@ -12,6 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Ecowater Hydrolink Custom from a config entry."""
     coordinator = EcowaterCoordinator(hass, entry)
+    await coordinator.async_restore_daily_usage()
 
     try:
         await coordinator.async_config_entry_first_refresh()
