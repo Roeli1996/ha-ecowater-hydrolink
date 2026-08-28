@@ -19,6 +19,7 @@ from homeassistant.util import dt as dt_util
 from .const import (
     DOMAIN,
     BASE_URLS,
+    CONF_DEVICE_ID,
     CONF_REGION,
     REGION_EU,
     CONF_USERNAME,
@@ -88,7 +89,11 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         self.base_url = BASE_URLS[self.region]
         self.login_url = f"{self.base_url}/auth/login"
         self.devices_list_url = f"{self.base_url}/devices?all=false&per_page=200"
-        self.device_id = None  # Will be filled after first device list fetch
+        # Entries created via the device-selection step already know which
+        # device to poll. Older entries (created before that existed) omit
+        # this, so we fall back to auto-selecting the first device the
+        # account's device list returns - unchanged legacy behavior.
+        self.device_id = entry.data.get(CONF_DEVICE_ID)
 
         # Variables for calculated daily usage (derived from total_water_used)
         self._previous_total = None   # Last known total water value
