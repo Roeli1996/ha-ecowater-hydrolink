@@ -3,7 +3,7 @@
 This module defines all sensor entities. It handles dynamic units:
 - Units that depend on the selected unit system (metric/imperial)
 - Units that should be translated according to the Home Assistant language
-  (e.g., "days", "times")
+  (e.g., "days")
 """
 
 import logging
@@ -12,6 +12,7 @@ from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
 )
+from homeassistant.const import UnitOfTime, UnitOfVolumeFlowRate
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, UNIT_METRIC
 
@@ -30,17 +31,6 @@ DAYS_UNIT_TRANSLATIONS = {
     "pt": "dias",
 }
 
-TIMES_UNIT_TRANSLATIONS = {
-    "nl": "keer",
-    "en": "times",
-    "fr": "fois",
-    "de": "Mal",
-    "es": "veces",
-    "it": "volte",
-    "pl": "razy",
-    "pt": "vezes",
-}
-
 
 def get_days_unit(language):
     """Return the translated unit for "days" based on the Home Assistant language.
@@ -52,18 +42,6 @@ def get_days_unit(language):
         Translated unit string, or "days" as fallback.
     """
     return DAYS_UNIT_TRANSLATIONS.get(language, "days")
-
-
-def get_times_unit(language):
-    """Return the translated unit for "times" based on the Home Assistant language.
-
-    Args:
-        language: Two‑letter language code (e.g., "nl", "en").
-
-    Returns:
-        Translated unit string, or "times" as fallback.
-    """
-    return TIMES_UNIT_TRANSLATIONS.get(language, "times")
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -120,7 +98,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
         ),
         EcoWaterSensor(
             coordinator, "current_flow", "current_flow",
-            "L/min", "gpm", SensorDeviceClass.WATER, SensorStateClass.MEASUREMENT
+            UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
+            UnitOfVolumeFlowRate.GALLONS_PER_MINUTE,
+            SensorDeviceClass.VOLUME_FLOW_RATE, SensorStateClass.MEASUREMENT
         ),
         EcoWaterSensor(
             coordinator, "avg_daily_use", "avg_daily_use",
@@ -130,7 +110,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             coordinator, "hardness", "hardness",
             "gpg", "gpg", None, None
         ),
-        # Count‑based sensors (units are language‑dependent: "keer"/"times")
+        # Count‑based sensors
         EcoWaterSensor(
             coordinator, "total_regens", "total_regens",
             None, None, None, SensorStateClass.TOTAL_INCREASING
@@ -174,7 +154,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         ),
         EcoWaterSensor(
             coordinator, "days_in_operation", "days_in_operation",
-            None, None, None, SensorStateClass.TOTAL_INCREASING
+            UnitOfTime.DAYS, UnitOfTime.DAYS, SensorDeviceClass.DURATION,
+            SensorStateClass.TOTAL_INCREASING
         ),
         EcoWaterSensor(
             coordinator, "power_outages", "power_outages",
@@ -317,7 +298,6 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
         if self._key in [
             "out_of_salt_days", "low_salt_trip_days",
             "days_since_regen", "avg_days_between_regens",
-            "days_in_operation"
         ]:
             unit = get_days_unit(self.coordinator.language)
             _LOGGER.debug(
@@ -326,14 +306,11 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
             )
             return unit
 
-        # Count‑based sensors (language‑dependent)
+        # total_regens and power_outages carry a state class, so their unit ends
+        # up in long-term statistics; a language-dependent unit would invalidate
+        # those the moment the user switches Home Assistant's language.
         if self._key in ["total_regens", "power_outages"]:
-            unit = get_times_unit(self.coordinator.language)
-            _LOGGER.debug(
-                "Sensor %s: language=%s, times unit=%s",
-                self.entity_id, self.coordinator.language, unit
-            )
-            return unit
+            return None
 
         # All other sensors: use the unit system (if applicable)
         if self._unit_metric is None:
@@ -368,6 +345,11 @@ class EcoWaterSensor(CoordinatorEntity, SensorEntity):
             metric = self.coordinator.data.get(key_metric)
             imperial = self.coordinator.data.get(key_imperial)
             if metric is None or imperial is None:
+                return
+            # Not every backend fills converted_value in: where it mirrors the
+            # raw value, publishing it would relabel the same number with the
+            # other unit system's unit.
+            if metric == imperial:
                 return
             if self.coordinator.unit_system == UNIT_METRIC:
                 attrs["imperial_value"] = imperial

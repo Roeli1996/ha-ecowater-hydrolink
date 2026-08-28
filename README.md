@@ -154,23 +154,56 @@ Attributes containing the alternative unit are only populated after the sensor h
 Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `total_salt_use`, may display values that seem unrealistic (e.g., very high numbers for a newly installed device). These values come directly from the Hydrolink API and are not calculated or modified by the integration. They reflect the data provided by the manufacturer's cloud service.
 
 ### Multiple devices under one account
-Starting from `1.4.2-beta.1`, adding the integration will show a device-selection step if your account has more than one device. Add the integration once per device (same credentials each time) - each becomes its own entry with its own sensors. Existing single-device setups are unaffected and don't need to be reconfigured.
+Starting from `1.4.3-beta.1`, adding the integration will show a device-selection step if your account has more than one device. Add the integration once per device (same credentials each time) - each becomes its own entry with its own sensors. Existing single-device setups are unaffected and don't need to be reconfigured.
 
 ### Known limitations
 - `water_used_in_last_regen` always reports unknown; see the note under [📊 Sensors](#-sensors) above.
 
 ## 📝 Changelog
 
-### v1.4.3-beta.1 – Fixed water_used_in_last_regen always reporting 0
+### v1.4.4-beta.1 – Multiple devices per account, fixed water_used_in_last_regen always reporting 0
+
+Combines the multi-device support described above with a fix for `water_used_in_last_regen`.
 
 The `water_used_in_last_regen` sensor (added in v1.4.0 as experimental) has been confirmed to always report `0`: it was calculated from the change in the outlet meter reading during a regeneration cycle, but regeneration water (backwash and brine rinse) goes to the drain and never passes through the outlet meter, so that delta is always exactly zero by design. Thanks [@delphiactual](https://github.com/delphiactual) for the root-cause analysis ([#18](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/18)).
 
 #### 🔧 Fixed
+- Accounts with more than one Hydrolink device can now add each device as its own entry (see [Multiple devices under one account](#multiple-devices-under-one-account) above). Fixes [#19](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/19).
 - `water_used_in_last_regen` now reports unknown instead of a misleading `0`, until the API is confirmed to expose a dedicated field for this.
 - Removed the now-dead regeneration-tracking state, which also fixes it resetting on every Home Assistant restart/reload.
 
 #### 📝 Notes
-- No configuration changes needed. If a real data source for this value turns up, the sensor will be revisited.
+- No configuration changes needed for existing single-device setups. If a real data source for regeneration water usage turns up, that sensor will be revisited.
+
+### v1.4.2 – Persist calculated daily usage across restarts
+
+`calculated_daily_use` no longer resets to zero on every Home Assistant restart or options change — its running total is now saved to disk (debounced) and restored on startup.
+
+#### 🔧 Fixed
+- `calculated_daily_use` now survives Home Assistant restarts and reloads instead of restarting the day from zero.
+
+#### 🙏 Thanks
+- [@delphiactual](https://github.com/delphiactual) for this fix (#17).
+
+#### 📝 Notes
+- No configuration changes needed.
+
+### v1.4.1 – Sensor unit fixes, login validation and diagnostics
+
+#### 🔧 Fixed
+- `current_flow` now uses the correct volume-flow-rate device class instead of an incompatible water device class, so it can be tracked in statistics.
+- `avg_salt_per_regen` was off by a factor of 1000 due to the API reporting it in thousandths of a pound.
+- `total_regens`, `power_outages` and `days_in_operation` no longer use a language-dependent unit, which was silently invalidating their long-term statistics whenever Home Assistant's language changed.
+- Fixed the alternative-unit attribute being published even when the metric and imperial values were identical, which mislabeled the same number under both units.
+- Fixed a device-naming inconsistency that split entities across two device names.
+- Setup now actually validates your Hydrolink credentials before creating the integration, instead of only failing later with a confusing error; failed logins are now logged with the full API response for easier troubleshooting.
+- The `Origin`/`Referer` request headers now match the selected region (previously hardcoded to the EU app URL for every region).
+
+#### 🙏 Thanks
+- [@delphiactual](https://github.com/delphiactual) for the sensor unit/scaling/statistics fixes above (#16), and for the detailed root-cause analysis behind the login diagnostics work.
+
+#### 📝 Notes
+- No configuration changes needed; fully backward compatible.
 
 ### v1.4.0 – Added water usage during last regeneration sensor (experimental) - 2026-06-19
 
@@ -274,6 +307,12 @@ If you're happy with the current version, you can safely skip this update.
 
 > **Important note for users upgrading from older versions:**  
 > Due to the addition of the unit system and new sensors, it is recommended to remove the integration and add it again after upgrading to v1.3.0. This ensures that all new sensors are created correctly and that the unit selection works as expected. Your historical data will not be lost.
+
+## 🙏 Credits
+
+Special thanks to [@delphiactual](https://github.com/delphiactual) for a series of high-quality contributions: root-causing why `water_used_in_last_regen` always reported zero, fixing several sensor unit/scaling/statistics issues (#16), and adding persistence for the calculated daily usage sensor across restarts (#17).
+
+Thanks as well to everyone who reports issues, tests beta releases, and contributes translations – this integration is better for it.
 
 ## 📝 License
 

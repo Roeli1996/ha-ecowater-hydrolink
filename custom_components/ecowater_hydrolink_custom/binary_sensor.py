@@ -44,7 +44,7 @@ class EcoWaterBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._attr_unique_id = f"{DOMAIN}_bin_{data_key}_{coordinator.entry.entry_id}"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, coordinator.entry.entry_id)},
-            "name": "Ecowater Waterontharder",
+            "name": "Ecowater Water Softener",
             "manufacturer": "EcoWater",
             "model": coordinator.data.get("model") if coordinator.data else None,
         }
