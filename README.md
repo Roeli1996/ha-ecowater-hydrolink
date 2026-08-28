@@ -155,6 +155,36 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 
 ## 📝 Changelog
 
+### v1.4.2 – Persist calculated daily usage across restarts
+
+`calculated_daily_use` no longer resets to zero on every Home Assistant restart or options change — its running total is now saved to disk (debounced) and restored on startup.
+
+#### 🔧 Fixed
+- `calculated_daily_use` now survives Home Assistant restarts and reloads instead of restarting the day from zero.
+
+#### 🙏 Thanks
+- [@delphiactual](https://github.com/delphiactual) for this fix (#17).
+
+#### 📝 Notes
+- No configuration changes needed.
+
+### v1.4.1 – Sensor unit fixes, login validation and diagnostics
+
+#### 🔧 Fixed
+- `current_flow` now uses the correct volume-flow-rate device class instead of an incompatible water device class, so it can be tracked in statistics.
+- `avg_salt_per_regen` was off by a factor of 1000 due to the API reporting it in thousandths of a pound.
+- `total_regens`, `power_outages` and `days_in_operation` no longer use a language-dependent unit, which was silently invalidating their long-term statistics whenever Home Assistant's language changed.
+- Fixed the alternative-unit attribute being published even when the metric and imperial values were identical, which mislabeled the same number under both units.
+- Fixed a device-naming inconsistency that split entities across two device names.
+- Setup now actually validates your Hydrolink credentials before creating the integration, instead of only failing later with a confusing error; failed logins are now logged with the full API response for easier troubleshooting.
+- The `Origin`/`Referer` request headers now match the selected region (previously hardcoded to the EU app URL for every region).
+
+#### 🙏 Thanks
+- [@delphiactual](https://github.com/delphiactual) for the sensor unit/scaling/statistics fixes above (#16), and for the detailed root-cause analysis behind the login diagnostics work.
+
+#### 📝 Notes
+- No configuration changes needed; fully backward compatible.
+
 ### v1.4.0 – Added water usage during last regeneration sensor (experimental) - 2026-06-19
 
 This release adds a new sensor that tracks the amount of water consumed during the most recent regeneration cycle. **Please note:** this feature is experimental and its accuracy depends on whether the device updates total water usage during regeneration – this has not yet been verified.
@@ -257,6 +287,12 @@ If you're happy with the current version, you can safely skip this update.
 
 > **Important note for users upgrading from older versions:**  
 > Due to the addition of the unit system and new sensors, it is recommended to remove the integration and add it again after upgrading to v1.3.0. This ensures that all new sensors are created correctly and that the unit selection works as expected. Your historical data will not be lost.
+
+## 🙏 Credits
+
+Special thanks to [@delphiactual](https://github.com/delphiactual) for a series of high-quality contributions: root-causing why `water_used_in_last_regen` always reported zero, fixing several sensor unit/scaling/statistics issues (#16), and adding persistence for the calculated daily usage sensor across restarts (#17).
+
+Thanks as well to everyone who reports issues, tests beta releases, and contributes translations – this integration is better for it.
 
 ## 📝 License
 
