@@ -6,13 +6,14 @@ It acts as the central data hub for the integration.
 
 import logging
 import asyncio
-from datetime import timedelta
+from datetime import date, timedelta
 
 import async_timeout
 from aiohttp.client_exceptions import ClientConnectorDNSError, ClientError
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from .const import (
@@ -35,6 +36,11 @@ _LOGGER = logging.getLogger(__name__)
 # average implied by total_salt_use_lbs / total_regens, so it arrives in
 # thousandths of a pound rather than pounds.
 AVG_SALT_PER_REGEN_SCALE = 1000
+
+STORAGE_VERSION = 1
+# Writes are debounced because the accumulator changes on every poll, but the
+# value only has to survive a restart.
+STORAGE_SAVE_DELAY = 60
 
 
 class EcowaterCoordinator(DataUpdateCoordinator):
@@ -89,6 +95,13 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         self._daily_total = 0.0       # Accumulated usage since midnight
         self._last_date = None        # Date of the last update (used for reset)
 
+        # These accumulate across polls, so they have to outlive a restart or an
+        # options change; both tear the coordinator down and would otherwise
+        # zero the running day.
+        self._store = Store(
+            hass, STORAGE_VERSION, f"{DOMAIN}.{entry.entry_id}.daily_usage"
+        )
+
         # Variables for water used in the last regeneration
         self._prev_regen = False           # Previous regeneration state (True/False)
         self._water_at_regen_start = None  # Total water at start of regeneration
@@ -115,6 +128,49 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         self.token = None
         self.session = async_get_clientsession(hass)
         _LOGGER.debug("Coordinator initialized")
+
+    async def async_restore_daily_usage(self):
+        """Reload the daily-usage accumulator saved by a previous run.
+
+        Must be awaited before the first refresh, otherwise the first poll
+        starts the day from zero again.
+        """
+        stored = await self._store.async_load()
+        if not stored:
+            _LOGGER.debug("No stored daily usage found, starting fresh")
+            return
+
+        try:
+            stored_date = stored.get("date")
+            self._last_date = date.fromisoformat(stored_date) if stored_date else None
+            self._daily_total = float(stored.get("daily_total", 0.0))
+            previous_total = stored.get("previous_total")
+            self._previous_total = (
+                float(previous_total) if previous_total is not None else None
+            )
+        except (TypeError, ValueError):
+            # A corrupt store must not block setup; the day simply restarts.
+            _LOGGER.warning("Stored daily usage unreadable, ignoring it")
+            self._last_date = None
+            self._daily_total = 0.0
+            self._previous_total = None
+            return
+
+        _LOGGER.debug(
+            "Restored daily usage: date=%s, daily_total=%s, previous_total=%s",
+            self._last_date, self._daily_total, self._previous_total
+        )
+
+    def _save_daily_usage(self):
+        """Queue a debounced write of the daily-usage accumulator."""
+        self._store.async_delay_save(
+            lambda: {
+                "date": self._last_date.isoformat() if self._last_date else None,
+                "daily_total": self._daily_total,
+                "previous_total": self._previous_total,
+            },
+            STORAGE_SAVE_DELAY,
+        )
 
     async def _async_request(self, method, url, **kwargs):
         """Perform an HTTP request with automatic retries on DNS/network errors.
@@ -350,6 +406,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             # Store current total for next time
             self._previous_total = current_total
 
+            self._save_daily_usage()
             data["calculated_daily_use"] = self._daily_total
         else:
             data["calculated_daily_use"] = 0.0
