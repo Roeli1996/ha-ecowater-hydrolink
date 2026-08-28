@@ -115,11 +115,19 @@ class IquaCoordinator(DataUpdateCoordinator):
         except Exception as ex:
             raise UpdateFailed(f"Could not reach EcoWater iQua login endpoint: {ex}") from ex
 
-        if response.status == 401:
-            raise UpdateFailed("Authentication failed for EcoWater iQua (check username/password)")
-        response.raise_for_status()
+        if response.status != 200:
+            body_text = await response.text()
+            _LOGGER.error(
+                "EcoWater iQua login failed with status %s: %s",
+                response.status, body_text
+            )
+            if response.status == 401:
+                raise UpdateFailed("Authentication failed for EcoWater iQua (check username/password)")
+            raise UpdateFailed(f"iQua login failed with status {response.status}")
+
         body = await response.json()
         if body.get("code") != "OK":
+            _LOGGER.error("iQua login response: %s", body)
             raise UpdateFailed(f"iQua login error: {body.get('code')} ({body.get('message')})")
 
         data = body["data"]
