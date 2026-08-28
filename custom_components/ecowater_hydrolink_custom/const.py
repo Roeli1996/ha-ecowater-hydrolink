@@ -29,14 +29,33 @@ BASE_URLS = {
 SCAN_INTERVAL_MINUTES = "scan_interval_minutes"
 DEFAULT_SCAN_INTERVAL = 5
 
+# Web app origins per region (used for the Origin/Referer headers below).
+APP_URLS = {
+    REGION_EU: "https://app.hydrolinkhome.eu",
+    REGION_US: "https://app.hydrolinkhome.com",
+}
+
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7",
     "Content-Type": "application/json",
-    "Origin": "https://app.hydrolinkhome.eu",
-    "Referer": "https://app.hydrolinkhome.eu/",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
     "X-Requested-With": "XMLHttpRequest",
 }
+
+
+def headers_for_region(region):
+    """Build request headers with Origin/Referer matching the selected region.
+
+    Previously Origin/Referer were hardcoded to the EU app URL for every
+    region, which doesn't match what the real US app would send.
+    """
+    app_url = APP_URLS.get(region, APP_URLS[REGION_EU])
+    return {
+        **HEADERS,
+        "Origin": app_url,
+        "Referer": f"{app_url}/",
+    }
+
 
 PLATFORMS = ["sensor", "binary_sensor"]
