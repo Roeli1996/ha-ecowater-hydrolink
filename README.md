@@ -72,6 +72,8 @@ The integration is fully configured via the Home Assistant user interface.
 6. Set the desired **update interval** in minutes (default 5 minutes; 1 minute also works).
 7. Click **Submit**.
 
+If your account has more than one device, you'll be asked to pick which one to add. **Repeat the whole "Add Integration" flow once per device** (same credentials each time) to add each device as its own entry.
+
 After successful configuration, all sensors and binary sensors will appear automatically under one device.
 
 ### Changing options
@@ -149,8 +151,10 @@ Attributes containing the alternative unit are only populated after the sensor h
 ### Unrealistic values for certain sensors
 Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `total_salt_use`, may display values that seem unrealistic (e.g., very high numbers for a newly installed device). These values come directly from the Hydrolink API and are not calculated or modified by the integration. They reflect the data provided by the manufacturer's cloud service.
 
+### Multiple devices under one account
+Starting from `1.4.2-beta.1`, adding the integration will show a device-selection step if your account has more than one device. Add the integration once per device (same credentials each time) - each becomes its own entry with its own sensors. Existing single-device setups are unaffected and don't need to be reconfigured.
+
 ### Known limitations
-- Not tested on multiple devices under a single account.
 - The `water_used_in_last_regen` sensor is experimental; its accuracy is not guaranteed and depends on the device's update behavior during regeneration.
 
 ## 📝 Changelog
