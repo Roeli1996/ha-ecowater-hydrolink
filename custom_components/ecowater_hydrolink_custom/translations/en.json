@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Select which EcoWater app your water softener uses.",
+        "data": {
+          "backend": "Cloud platform / app"
+        }
+      },
+      "hydrolink": {
+        "title": "Hydrolink login",
         "description": "Enter your Hydrolink login credentials to connect to your water softener.",
         "data": {
           "username": "Username (Email)",
@@ -11,10 +18,20 @@
           "unit_system": "Unit system",
           "scan_interval_minutes": "Update interval (minutes)"
         }
+      },
+      "iqua": {
+        "title": "iQua login",
+        "description": "Enter your iQua login credentials and device serial number (e.g. for Aquahome Duo Smart). The serial number can be found in the iQua app under your device's settings/info screen.",
+        "data": {
+          "username": "Username (Email)",
+          "password": "Password",
+          "device_serial_number": "Device serial number",
+          "scan_interval_minutes": "Update interval (minutes)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect to the Hydrolink API.",
+      "cannot_connect": "Failed to connect to the API.",
       "invalid_auth": "Invalid username or password.",
       "unknown": "An unexpected error occurred."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Salt alert" },
       "leak_alert": { "name": "Leak alert" },
       "error_alert": { "name": "System error alert" },
-      "alarm_beeping": { "name": "Alarm beeping" }
+      "alarm_beeping": { "name": "Alarm beeping" },
+      "connectivity": { "name": "Connectivity" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Water shutoff valve" }
     }
   }
 }

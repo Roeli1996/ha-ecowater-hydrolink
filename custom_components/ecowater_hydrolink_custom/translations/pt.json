@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Selecione qual aplicação EcoWater o seu descalcificador de água utiliza.",
+        "data": {
+          "backend": "Plataforma cloud / aplicação"
+        }
+      },
+      "hydrolink": {
+        "title": "Início de sessão Hydrolink",
         "description": "Introduza as suas credenciais Hydrolink Plus para ligar o seu descalcificador de água.",
         "data": {
           "username": "Nome de utilizador (Email)",
@@ -11,10 +18,20 @@
           "unit_system": "Sistema de unidades",
           "scan_interval_minutes": "Intervalo de atualização (minutos)"
         }
+      },
+      "iqua": {
+        "title": "Início de sessão iQua",
+        "description": "Introduza as suas credenciais iQua e o número de série do dispositivo (por exemplo, para o Aquahome Duo Smart). O número de série encontra-se na app iQua, nas informações/definições do dispositivo.",
+        "data": {
+          "username": "Nome de utilizador (Email)",
+          "password": "Palavra-passe",
+          "device_serial_number": "Número de série do dispositivo",
+          "scan_interval_minutes": "Intervalo de atualização (minutos)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Falha na ligação à API Hydrolink.",
+      "cannot_connect": "Falha na ligação à API.",
       "invalid_auth": "Nome de utilizador ou palavra-passe inválidos.",
       "unknown": "Ocorreu um erro inesperado."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Alarme de sal" },
       "leak_alert": { "name": "Alarme de fuga" },
       "error_alert": { "name": "Alarme de erro do sistema" },
-      "alarm_beeping": { "name": "Sinal sonoro de alarme" }
+      "alarm_beeping": { "name": "Sinal sonoro de alarme" },
+      "connectivity": { "name": "Conectividade" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Válvula de corte de água" }
     }
   }
 }

@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Sélectionnez l'application EcoWater utilisée par votre adoucisseur d'eau.",
+        "data": {
+          "backend": "Plateforme cloud / application"
+        }
+      },
+      "hydrolink": {
+        "title": "Connexion Hydrolink",
         "description": "Saisissez vos identifiants Hydrolink Plus pour connecter votre adoucisseur d'eau.",
         "data": {
           "username": "Nom d'utilisateur (Email)",
@@ -11,10 +18,20 @@
           "unit_system": "Système d'unités",
           "scan_interval_minutes": "Intervalle de mise à jour (minutes)"
         }
+      },
+      "iqua": {
+        "title": "Connexion iQua",
+        "description": "Saisissez vos identifiants iQua et le numéro de série de l'appareil (par ex. pour Aquahome Duo Smart). Le numéro de série se trouve dans l'application iQua, dans les informations/paramètres de l'appareil.",
+        "data": {
+          "username": "Nom d'utilisateur (Email)",
+          "password": "Mot de passe",
+          "device_serial_number": "Numéro de série de l'appareil",
+          "scan_interval_minutes": "Intervalle de mise à jour (minutes)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Échec de la connexion à l'API Hydrolink.",
+      "cannot_connect": "Échec de la connexion à l'API.",
       "invalid_auth": "Nom d'utilisateur ou mot de passe invalide.",
       "unknown": "Une erreur inattendue s'est produite."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Alarme sel" },
       "leak_alert": { "name": "Alarme fuite" },
       "error_alert": { "name": "Alarme erreur système" },
-      "alarm_beeping": { "name": "Avertisseur sonore" }
+      "alarm_beeping": { "name": "Avertisseur sonore" },
+      "connectivity": { "name": "Connectivité" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Vanne d'arrêt d'eau" }
     }
   }
 }

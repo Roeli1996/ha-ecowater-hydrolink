@@ -3,6 +3,13 @@
     "step": {
       "user": {
         "title": "Ecowater Hydrolink Custom",
+        "description": "Wybierz, której aplikacji EcoWater używa Twój zmiękczacz wody.",
+        "data": {
+          "backend": "Platforma chmurowa / aplikacja"
+        }
+      },
+      "hydrolink": {
+        "title": "Logowanie Hydrolink",
         "description": "Wprowadź swoje dane logowania do Hydrolink Plus, aby połączyć się ze zmiękczaczem wody.",
         "data": {
           "username": "Nazwa użytkownika (Email)",
@@ -11,10 +18,20 @@
           "unit_system": "System jednostek",
           "scan_interval_minutes": "Interwał aktualizacji (minuty)"
         }
+      },
+      "iqua": {
+        "title": "Logowanie iQua",
+        "description": "Wprowadź dane logowania iQua oraz numer seryjny urządzenia (np. dla Aquahome Duo Smart). Numer seryjny znajdziesz w aplikacji iQua w informacjach/ustawieniach urządzenia.",
+        "data": {
+          "username": "Nazwa użytkownika (Email)",
+          "password": "Hasło",
+          "device_serial_number": "Numer seryjny urządzenia",
+          "scan_interval_minutes": "Interwał aktualizacji (minuty)"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Nie można połączyć się z API Hydrolink.",
+      "cannot_connect": "Nie można połączyć się z API.",
       "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło.",
       "unknown": "Wystąpił nieoczekiwany błąd."
     },
@@ -73,7 +90,11 @@
       "salt_alert": { "name": "Alarm soli" },
       "leak_alert": { "name": "Alarm wycieku" },
       "error_alert": { "name": "Alarm błędu systemu" },
-      "alarm_beeping": { "name": "Sygnalizator dźwiękowy" }
+      "alarm_beeping": { "name": "Sygnalizator dźwiękowy" },
+      "connectivity": { "name": "Łączność" }
+    },
+    "switch": {
+      "water_shutoff_valve": { "name": "Zawór odcinający wodę" }
     }
   }
 }

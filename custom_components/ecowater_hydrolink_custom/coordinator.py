@@ -5,12 +5,7 @@ It acts as the central data hub for the integration.
 """
 
 import logging
-import asyncio
 from datetime import timedelta
-
-import aiohttp
-import async_timeout
-from aiohttp.client_exceptions import ClientConnectorDNSError, ClientError
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -28,7 +23,9 @@ from .const import (
     HEADERS,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
+    BACKEND_HYDROLINK,
 )
+from .net import async_request_with_retry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,6 +51,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             entry: ConfigEntry containing user configuration
         """
         self.entry = entry
+        self.backend = BACKEND_HYDROLINK
 
         # Region selection (default to EU if not set)
         self.region = entry.data.get(CONF_REGION, REGION_EU)
@@ -126,25 +124,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         Raises:
             Exception if all retries fail
         """
-        max_retries = 2
-        for attempt in range(max_retries + 1):
-            try:
-                async with async_timeout.timeout(20):
-                    return await self.session.request(method, url, **kwargs)
-            except (ClientConnectorDNSError, ClientError, asyncio.TimeoutError) as err:
-                if attempt < max_retries:
-                    wait = 2 * (attempt + 1)
-                    _LOGGER.warning(
-                        "Error on %s %s (attempt %d/%d): %s. Retrying in %s seconds.",
-                        method, url, attempt + 1, max_retries + 1, err, wait
-                    )
-                    await asyncio.sleep(wait)
-                else:
-                    _LOGGER.error("Max retries reached for %s %s", method, url)
-                    raise
-            except Exception as err:
-                _LOGGER.exception("Unexpected error on %s %s", method, url)
-                raise
+        return await async_request_with_retry(self.session, method, url, **kwargs)
 
     async def _get_token(self):
         """Obtain a new access token from the login endpoint.
@@ -168,7 +148,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             else:
                 _LOGGER.error("No token in response: %s", data)
             return token
-        except Exception as ex:
+        except Exception:
             _LOGGER.exception("Authentication failed for Ecowater")
             return None
 
