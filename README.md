@@ -119,9 +119,11 @@ The integration adds the following sensors (all grouped under one device). Units
 | `total_rock_removed` | Total hardness removed over lifetime | kg | | `imperial_value` / `metric_value` |
 | `total_salt_use` | Total salt consumed over lifetime | kg | | `imperial_value` / `metric_value` |
 | `calculated_daily_use` | Total calculated water use for today | L | water | `imperial_value` / `metric_value` |
-| `water_used_in_last_regen` | Water used during the last regeneration cycle (experimental – needs verification) | L | water | – |
+| `water_used_in_last_regen` | Water used during the last regeneration cycle (currently always unknown - see note below) | L | water | – |
 
-> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The `calculated_daily_use` resets to zero after each update. The `water_used_in_last_regen` sensor is experimental and its accuracy depends on whether the device reports total water usage during regeneration (this has not yet been confirmed). It will display `0` until a regeneration cycle has completed after updating.
+> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The `calculated_daily_use` resets to zero after each update.
+>
+> **`water_used_in_last_regen` currently always reports "unknown".** It was originally calculated as the change in `total_water_used` (the outlet meter) during a regeneration cycle, but that's not actually measurable that way: regeneration water (backwash and brine rinse) goes to the drain and never passes through the outlet meter, so the delta was always exactly zero - a false reading, not a genuine "no water used". Rather than keep reporting a misleading `0`, the sensor now reports unknown until the API is confirmed to expose a dedicated field for this (see [issue #18](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/18)).
 
 ## 🚨 Binary sensors
 
@@ -155,9 +157,20 @@ Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `tot
 Starting from `1.4.2-beta.1`, adding the integration will show a device-selection step if your account has more than one device. Add the integration once per device (same credentials each time) - each becomes its own entry with its own sensors. Existing single-device setups are unaffected and don't need to be reconfigured.
 
 ### Known limitations
-- The `water_used_in_last_regen` sensor is experimental; its accuracy is not guaranteed and depends on the device's update behavior during regeneration.
+- `water_used_in_last_regen` always reports unknown; see the note under [📊 Sensors](#-sensors) above.
 
 ## 📝 Changelog
+
+### v1.4.3-beta.1 – Fixed water_used_in_last_regen always reporting 0
+
+The `water_used_in_last_regen` sensor (added in v1.4.0 as experimental) has been confirmed to always report `0`: it was calculated from the change in the outlet meter reading during a regeneration cycle, but regeneration water (backwash and brine rinse) goes to the drain and never passes through the outlet meter, so that delta is always exactly zero by design. Thanks [@delphiactual](https://github.com/delphiactual) for the root-cause analysis ([#18](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/18)).
+
+#### 🔧 Fixed
+- `water_used_in_last_regen` now reports unknown instead of a misleading `0`, until the API is confirmed to expose a dedicated field for this.
+- Removed the now-dead regeneration-tracking state, which also fixes it resetting on every Home Assistant restart/reload.
+
+#### 📝 Notes
+- No configuration changes needed. If a real data source for this value turns up, the sensor will be revisited.
 
 ### v1.4.0 – Added water usage during last regeneration sensor (experimental) - 2026-06-19
 
