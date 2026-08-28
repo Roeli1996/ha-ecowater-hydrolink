@@ -32,6 +32,11 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# The API reports avg_salt_per_regen_lbs a thousand times larger than the
+# average implied by total_salt_use_lbs / total_regens, so it arrives in
+# thousandths of a pound rather than pounds.
+AVG_SALT_PER_REGEN_SCALE = 1000
+
 
 class EcowaterCoordinator(DataUpdateCoordinator):
     """Coordinator for periodically fetching Ecowater data.
@@ -222,6 +227,12 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             prop = props.get(key, {})
             return prop.get("converted_value", default)
 
+        # Helper to rescale a raw API value that is reported in sub-units
+        def _scaled(value, divisor):
+            if value is None:
+                return None
+            return round(value / divisor, 2)
+
         # Helper to get the appropriate measurement based on the selected unit system
         def get_measurement(prop_key, default=None):
             if self.unit_system == UNIT_METRIC:
@@ -258,7 +269,10 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             "water_available": get_measurement("treated_water_avail_gals"),
             "current_flow": get_measurement("current_water_flow_gpm"),
             "avg_daily_use": get_measurement("avg_daily_use_gals"),
-            "avg_salt_per_regen": get_measurement("avg_salt_per_regen_lbs"),
+            "avg_salt_per_regen": _scaled(
+                get_measurement("avg_salt_per_regen_lbs"),
+                AVG_SALT_PER_REGEN_SCALE,
+            ),
 
             # Other fields (not unit‑sensitive)
             "hardness": get_prop_value("hardness_grains"),
@@ -333,7 +347,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
 
             data["calculated_daily_use"] = self._daily_total
         else:
-            data["calculated_daily_use"] = 0
+            data["calculated_daily_use"] = 0.0
 
         # ----- Water used in the last regeneration -----
         # This calculates the amount of water consumed during the most recent regeneration cycle.
