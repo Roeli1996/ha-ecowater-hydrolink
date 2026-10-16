@@ -26,6 +26,7 @@ from .const import (
     CONF_PASSWORD,
     CONF_UNIT_SYSTEM,
     UNIT_METRIC,
+    devices_list_url,
     headers_for_region,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
@@ -87,7 +88,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         # Construct API endpoints based on selected region
         self.base_url = BASE_URLS[self.region]
         self.login_url = f"{self.base_url}/auth/login"
-        self.devices_list_url = f"{self.base_url}/devices?all=false&per_page=200"
+        self.devices_list_url = devices_list_url(self.region)
         # Entries created via the device-selection step already know which
         # device to poll. Older entries (created before that existed) omit
         # this, so we fall back to auto-selecting the first device the

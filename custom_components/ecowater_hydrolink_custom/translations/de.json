@@ -22,7 +22,8 @@
     },
     "error": {
       "cannot_connect": "Verbindung zur Hydrolink-API fehlgeschlagen.",
-      "invalid_auth": "Ungültiger Benutzername oder Passwort.",
+      "invalid_auth": "Ungültiger Benutzername oder Passwort.",
+      "invalid_auth_iqua": "Ungültiger Benutzername oder Passwort. Probieren Sie bei einem iQua-Konto auch die andere iQua-Option (iQua oder iQua 2) - ein Konto existiert nur auf einem der beiden Server.",
       "no_devices": "Keine Geräte in diesem Hydrolink-Konto gefunden.",
       "unknown": "Ein unerwarteter Fehler ist aufgetreten."
     },

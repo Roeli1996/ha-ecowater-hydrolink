@@ -12,10 +12,25 @@ CONF_PASSWORD = "password"
 # device the account's device list returns - unchanged legacy behavior.
 CONF_DEVICE_ID = "device_id"
 
-# Region selection
+# Region selection.
+# EU / US are the two Hydrolink servers. IQUA / IQUA2 are the servers of the
+# EcoWater "iQua" and "iQua 2" apps, which run the same platform (identical
+# routes and device data model) under other hostnames - this is what devices
+# such as the Aquahome Duo Smart (Viessmann) are connected to.
 CONF_REGION = "region"
 REGION_EU = "EU"
 REGION_US = "US"
+REGION_IQUA = "IQUA"
+REGION_IQUA2 = "IQUA2"
+IQUA_REGIONS = (REGION_IQUA, REGION_IQUA2)
+
+# Labels shown in the setup form.
+REGION_OPTIONS = {
+    REGION_EU: "Hydrolink Europe (app.hydrolinkhome.eu)",
+    REGION_US: "Hydrolink US / Other (app.hydrolinkhome.com)",
+    REGION_IQUA2: "iQua 2 (app.iqua2.com) - e.g. Aquahome Duo Smart",
+    REGION_IQUA: "iQua (iQua app) - older iQua accounts",
+}
 
 # Unit system selection
 CONF_UNIT_SYSTEM = "unit_system"
@@ -30,6 +45,8 @@ UNIT_OPTIONS = {
 BASE_URLS = {
     REGION_EU: "https://api.hydrolinkhome.eu/v1",
     REGION_US: "https://api.hydrolinkhome.com/v1",
+    REGION_IQUA: "https://api.myiquaapp.com/v1",
+    REGION_IQUA2: "https://api.iqua2.com/v1",
 }
 
 SCAN_INTERVAL_MINUTES = "scan_interval_minutes"
@@ -51,17 +68,36 @@ HEADERS = {
 
 
 def headers_for_region(region):
-    """Build request headers with Origin/Referer matching the selected region.
+    """Build request headers for the selected region.
 
-    Previously Origin/Referer were hardcoded to the EU app URL for every
-    region, which doesn't match what the real US app would send.
+    Hydrolink: browser-style headers with Origin/Referer matching the region
+    (previously hardcoded to the EU app URL for every region).
+
+    iQua / iQua 2: plain JSON headers only. The community clients that are
+    known to work against these servers send no browser User-Agent and no
+    Origin/Referer, so we don't pretend to be a browser there.
     """
+    if region in IQUA_REGIONS:
+        return {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
     app_url = APP_URLS.get(region, APP_URLS[REGION_EU])
     return {
         **HEADERS,
         "Origin": app_url,
         "Referer": f"{app_url}/",
     }
+
+
+def devices_list_url(region):
+    """Return the URL that lists the devices of the logged-in account."""
+    base = BASE_URLS[region]
+    if region in IQUA_REGIONS:
+        # The iQua clients call the plain endpoint; the query string is a
+        # Hydrolink web-app detail we have no evidence the iQua servers need.
+        return f"{base}/devices"
+    return f"{base}/devices?all=false&per_page=200"
 
 
 PLATFORMS = ["sensor", "binary_sensor"]

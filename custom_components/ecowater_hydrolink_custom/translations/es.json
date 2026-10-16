@@ -22,7 +22,8 @@
     },
     "error": {
       "cannot_connect": "No se pudo conectar con la API de Hydrolink.",
-      "invalid_auth": "Nombre de usuario o contraseña inválidos.",
+      "invalid_auth": "Nombre de usuario o contraseña inválidos.",
+      "invalid_auth_iqua": "Nombre de usuario o contraseña inválidos. Con una cuenta iQua, prueba también la otra opción iQua (iQua o iQua 2): una cuenta existe solo en uno de los dos servidores.",
       "no_devices": "No se encontraron dispositivos en esta cuenta de Hydrolink.",
       "unknown": "Ocurrió un error inesperado."
     },

@@ -22,7 +22,8 @@
     },
     "error": {
       "cannot_connect": "Verbinding met de Hydrolink API mislukt.",
-      "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord.",
+      "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord.",
+      "invalid_auth_iqua": "Ongeldige gebruikersnaam of wachtwoord. Probeer bij een iQua-account ook de andere iQua-optie (iQua of iQua 2) - een account bestaat maar op één van de twee servers.",
       "no_devices": "Geen apparaten gevonden op dit Hydrolink-account.",
       "unknown": "Er is een onverwachte fout opgetreden."
     },

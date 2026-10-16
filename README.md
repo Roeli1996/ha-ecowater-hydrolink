@@ -5,13 +5,15 @@
 [![hacs][hacsbadge]][hacs]
 [![Author][author-shield]][github]
 
-**Home Assistant integration for Ecowater water softeners via the Hydrolink platform.**
+**Home Assistant integration for Ecowater water softeners via the Hydrolink and iQua platforms.**
 
 This custom integration retrieves real-time data from your Ecowater water softener through the Hydrolink API and displays it as sensors and binary sensors in Home Assistant. You can monitor water usage, salt level, regeneration status, alerts, and many other parameters. The API offers many more sensors; currently the most relevant ones have been added.
 
-> **🌍 Multi-region support:** Starting from version 1.1.0, you can select your region during configuration:  
-> - **Europe** (`app.hydrolinkhome.eu`)  
-> - **US / Other** (`app.hydrolinkhome.com`)
+> **🌍 Multi-region support:** you select the server your account lives on during configuration:  
+> - **Hydrolink Europe** (`app.hydrolinkhome.eu`)  
+> - **Hydrolink US / Other** (`app.hydrolinkhome.com`)  
+> - **iQua 2** (`app.iqua2.com`) – e.g. the **Aquahome Duo Smart** / Viessmann softeners *(beta)*  
+> - **iQua** (iQua app) – older iQua accounts *(beta)*
 
 > **📏 Unit system selection:** Starting from version 1.3.0, you can choose between metric (liters, kg) and imperial (gallons, lbs) units during configuration or via options. The integration automatically displays the correct values based on your preference. The alternative unit is available as an attribute on each sensor (see below).
 
@@ -67,7 +69,7 @@ The integration is fully configured via the Home Assistant user interface.
 1. Go to **Settings → Devices & services**.
 2. Click **Add Integration** and search for "Ecowater Hydrolink Custom".
 3. Enter your login credentials (email and password of your Hydrolink account).
-4. **Select your region** (EU or US). This determines the correct API endpoint.
+4. **Select your region / platform** (Hydrolink EU, Hydrolink US, iQua 2 or iQua). This determines the correct API endpoint – see [iQua devices](#iqua-devices-aquahome-duo-smart) if you use the iQua app.
 5. **Select your preferred unit system** (metric or imperial).
 6. Set the desired **update interval** in minutes (default 5 minutes; 1 minute also works).
 7. Click **Submit**.
@@ -82,6 +84,23 @@ After installation, you can adjust the update interval and unit system via:
 **Device → three dots → Options**
 
 > **Note:** When you change the unit system, the displayed values may not update immediately due to Home Assistant's entity state cache. After saving the options, the integration reloads and the new values will appear on the next sensor update. You can also force a refresh by restarting the integration or waiting for the next scheduled poll.
+
+### iQua devices (Aquahome Duo Smart)
+
+*(Beta – added in `1.5.0-beta.3`.)*
+
+Softeners that are managed with the **iQua** app – for example the **Aquahome Duo Smart** and other Viessmann-branded EcoWater softeners – run on the same EcoWater platform as Hydrolink, just under other server names. They are therefore supported as two extra choices in the **region** list, and you get the same sensors as a Hydrolink device (as far as your model reports them):
+
+| Choose this | If your account is on |
+|-------------|-----------------------|
+| **iQua 2** | the iQua 2 web portal (`app.iqua2.com`) – most newer accounts |
+| **iQua** | the older iQua servers (`api.myiquaapp.com`) |
+
+Log in with the **same e-mail address and password as in the iQua app**. If login fails, try the other iQua option – an account only exists on one of the two servers. You do not need to type a serial number: your devices are listed after logging in, so you can simply pick yours (add the integration once per device if you have several).
+
+> **Status:** these servers and the shared data model were identified from community projects and public API behaviour, and have **not yet been confirmed on a real Aquahome Duo Smart**. Please report your experience in [#12](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/12). Not yet supported: the water shutoff valve and an online/offline sensor.
+>
+> If you tried `1.5.0-beta.1` or `1.5.0-beta.2` (which asked for a serial number), remove that integration entry and add it again with the new setup.
 
 ## 📊 Sensors
 
@@ -160,6 +179,19 @@ Starting from `1.4.3-beta.1`, adding the integration will show a device-selectio
 - `water_used_in_last_regen` always reports unknown; see the note under [📊 Sensors](#-sensors) above.
 
 ## 📝 Changelog
+
+### v1.5.0-beta.3 – iQua / Aquahome Duo Smart support via the shared platform
+
+Replaces the separate iQua backend of `1.5.0-beta.1/2`. Research showed that the iQua servers (`api.iqua2.com`, `api.myiquaapp.com`) expose the same API routes and device data model as Hydrolink, so iQua devices are now simply two more **regions** next to Hydrolink EU/US. Benefits: all existing sensors, device selection from the account's device list (no serial number to type), and one code path instead of two.
+
+#### ✨ New
+- Regions **iQua 2** and **iQua** (beta) – see [iQua devices](#iqua-devices-aquahome-duo-smart).
+- A login failure on an iQua region now points to the other iQua option.
+
+#### 📝 Notes
+- Includes everything from `1.4.3-beta.1` below (multi-device support, `hacs.json`, null-safe parsing).
+- Entries created with `1.5.0-beta.1/2` must be removed and added again.
+- Not yet confirmed on a real Aquahome Duo Smart. Water shutoff valve control and an online/offline sensor are not part of this beta.
 
 ### v1.4.3-beta.1 – Multiple devices per account, fixed water_used_in_last_regen always reporting 0
 

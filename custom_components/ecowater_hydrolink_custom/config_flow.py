@@ -16,13 +16,15 @@ from .const import (
     CONF_DEVICE_ID,
     CONF_REGION,
     REGION_EU,
-    REGION_US,
+    REGION_OPTIONS,
+    IQUA_REGIONS,
     CONF_UNIT_SYSTEM,
     UNIT_METRIC,
     UNIT_OPTIONS,
     SCAN_INTERVAL_MINUTES,
     DEFAULT_SCAN_INTERVAL,
     BASE_URLS,
+    devices_list_url,
     headers_for_region,
 )
 
@@ -57,6 +59,9 @@ async def _login_and_fetch_devices(hass, region, username, password):
     session = async_get_clientsession(hass)
     base_url = BASE_URLS[region]
     headers = headers_for_region(region)
+    # iQua accounts live on one of two servers; point the user at the other
+    # one instead of leaving them with a bare "invalid password".
+    auth_error = "invalid_auth_iqua" if region in IQUA_REGIONS else "invalid_auth"
 
     try:
         async with async_timeout.timeout(20):
@@ -66,42 +71,42 @@ async def _login_and_fetch_devices(hass, region, username, password):
                 headers=headers,
             )
     except (ClientConnectorDNSError, ClientError, asyncio.TimeoutError) as err:
-        _LOGGER.warning("Could not reach Hydrolink API at %s: %s", base_url, err)
+        _LOGGER.warning("Could not reach %s: %s", base_url, err)
         return None, "cannot_connect"
 
     if login_response.status == 401:
         body = await login_response.text()
-        _LOGGER.debug("Hydrolink login rejected (401) during setup: %s", body)
-        return None, "invalid_auth"
+        _LOGGER.debug("Login rejected (401) by %s during setup: %s", base_url, body)
+        return None, auth_error
     if login_response.status != 200:
         body = await login_response.text()
         _LOGGER.warning(
-            "Unexpected status %s from Hydrolink login during setup: %s",
-            login_response.status, body
+            "Unexpected status %s from %s login during setup: %s",
+            login_response.status, base_url, body
         )
         return None, "cannot_connect"
 
     login_data = await login_response.json()
     token = login_data.get("access_token") or login_data.get("token")
     if not token:
-        _LOGGER.warning("Hydrolink login returned 200 but no token during setup: %s", login_data)
-        return None, "invalid_auth"
+        _LOGGER.warning("Login to %s returned 200 but no token during setup: %s", base_url, login_data)
+        return None, auth_error
 
     try:
         async with async_timeout.timeout(20):
             devices_response = await session.get(
-                f"{base_url}/devices?all=false&per_page=200",
+                devices_list_url(region),
                 headers={**headers, "Authorization": f"Bearer {token}"},
             )
     except (ClientConnectorDNSError, ClientError, asyncio.TimeoutError) as err:
-        _LOGGER.warning("Could not fetch Hydrolink device list: %s", err)
+        _LOGGER.warning("Could not fetch the device list from %s: %s", base_url, err)
         return None, "cannot_connect"
 
     if devices_response.status != 200:
         body = await devices_response.text()
         _LOGGER.warning(
-            "Unexpected status %s fetching Hydrolink device list during setup: %s",
-            devices_response.status, body
+            "Unexpected status %s fetching the device list from %s during setup: %s",
+            devices_response.status, base_url, body
         )
         return None, "cannot_connect"
 
@@ -153,12 +158,9 @@ class EcowaterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 username_field: str,
                 vol.Required(CONF_PASSWORD): str,
-                vol.Required(CONF_REGION, default=user_input.get(CONF_REGION, REGION_EU)): vol.In(
-                    {
-                        REGION_EU: "Europe (app.hydrolinkhome.eu)",
-                        REGION_US: "US / Other (app.hydrolinkhome.com)",
-                    }
-                ),
+                vol.Required(
+                    CONF_REGION, default=user_input.get(CONF_REGION, REGION_EU)
+                ): vol.In(REGION_OPTIONS),
                 vol.Required(
                     CONF_UNIT_SYSTEM, default=user_input.get(CONF_UNIT_SYSTEM, UNIT_METRIC)
                 ): vol.In(UNIT_OPTIONS),
