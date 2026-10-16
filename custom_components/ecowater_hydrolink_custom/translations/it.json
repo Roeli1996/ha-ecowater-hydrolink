@@ -11,15 +11,23 @@
           "unit_system": "Sistema di unità",
           "scan_interval_minutes": "Intervallo di aggiornamento (minuti)"
         }
+      },
+      "select_device": {
+        "title": "Seleziona dispositivo",
+        "description": "Sono stati trovati più dispositivi su questo account. Scegli quale aggiungere - puoi aggiungere di nuovo l'integrazione per aggiungerne un altro.",
+        "data": {
+          "device_id": "Dispositivo"
+        }
       }
     },
     "error": {
       "cannot_connect": "Impossibile connettersi all'API Hydrolink.",
       "invalid_auth": "Nome utente o password non validi.",
+      "no_devices": "Nessun dispositivo trovato in questo account Hydrolink.",
       "unknown": "Si è verificato un errore imprevisto."
     },
     "abort": {
-      "already_configured": "Questo account è già configurato."
+      "already_configured": "Questo dispositivo è già configurato."
     }
   },
   "options": {

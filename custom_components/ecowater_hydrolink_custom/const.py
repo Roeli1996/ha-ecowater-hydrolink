@@ -6,6 +6,12 @@ NAME = "Ecowater Hydrolink Custom"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
 
+# Explicit device selection (for accounts with more than one Hydrolink
+# device). Older config entries created before this existed simply omit
+# this key, and the coordinator falls back to auto-selecting the first
+# device the account's device list returns - unchanged legacy behavior.
+CONF_DEVICE_ID = "device_id"
+
 # Region selection
 CONF_REGION = "region"
 REGION_EU = "EU"
