@@ -161,7 +161,7 @@ Starting from `1.4.3-beta.1`, adding the integration will show a device-selectio
 
 ## 📝 Changelog
 
-### v1.4.4-beta.1 – Multiple devices per account, fixed water_used_in_last_regen always reporting 0
+### v1.4.3-beta.1 – Multiple devices per account, fixed water_used_in_last_regen always reporting 0
 
 Combines the multi-device support described above with a fix for `water_used_in_last_regen`.
 
@@ -171,6 +171,8 @@ The `water_used_in_last_regen` sensor (added in v1.4.0 as experimental) has been
 - Accounts with more than one Hydrolink device can now add each device as its own entry (see [Multiple devices under one account](#multiple-devices-under-one-account) above). Fixes [#19](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/19).
 - `water_used_in_last_regen` now reports unknown instead of a misleading `0`, until the API is confirmed to expose a dedicated field for this.
 - Removed the now-dead regeneration-tracking state, which also fixes it resetting on every Home Assistant restart/reload.
+- A device whose API data contains explicit `null` sections - for example an iron filter, which has no salt tank - no longer crashes the update (`'NoneType' object has no attribute 'get'`) and can be added. Thanks [@Prophet6](https://github.com/Prophet6) for testing multi-device support, finding this and diagnosing it.
+- Added the missing `hacs.json`. Without it HACS refused to install a specific (pre-)release with *"The version … for this integration can not be used with HACS"*, regardless of how the version was named.
 
 #### 📝 Notes
 - No configuration changes needed for existing single-device setups. If a real data source for regeneration water usage turns up, that sensor will be revisited.
@@ -311,6 +313,8 @@ If you're happy with the current version, you can safely skip this update.
 ## 🙏 Credits
 
 Special thanks to [@delphiactual](https://github.com/delphiactual) for a series of high-quality contributions: root-causing why `water_used_in_last_regen` always reported zero, fixing several sensor unit/scaling/statistics issues (#16), and adding persistence for the calculated daily usage sensor across restarts (#17).
+
+Thanks to [@Prophet6](https://github.com/Prophet6) for testing multi-device support on a real account and tracking down the crash on devices without a salt tank, and to [@harish-ramaswamy](https://github.com/harish-ramaswamy) for reporting the multi-device problem (#19) and for the patience while the HACS installation issue was being sorted out.
 
 Thanks as well to everyone who reports issues, tests beta releases, and contributes translations – this integration is better for it.
 
