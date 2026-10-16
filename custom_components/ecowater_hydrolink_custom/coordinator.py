@@ -271,20 +271,23 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         Returns:
             dict: Mapped sensor data ready for use by sensor entities.
         """
-        props = device.get("properties", {})
-        enriched = device.get("enriched_data", {})
-        wt = enriched.get("water_treatment", {})
-        wts = wt.get("water_treatment_status", {})
-        dealership = device.get("dealership", {})
+        # The API returns an explicit null (not a missing key) for sections a
+        # device doesn't have - e.g. water_treatment.salt_level on a filter
+        # without a salt tank - so every nested lookup has to tolerate None.
+        props = device.get("properties") or {}
+        enriched = device.get("enriched_data") or {}
+        wt = enriched.get("water_treatment") or {}
+        wts = wt.get("water_treatment_status") or {}
+        dealership = device.get("dealership") or {}
 
         # Helper to safely extract a property value (e.g., "value" field)
         def get_prop_value(key, subkey="value", default=None):
-            prop = props.get(key, {})
+            prop = props.get(key) or {}
             return prop.get(subkey, default)
 
         # Helper to safely extract the converted (metric) value
         def get_prop_converted(key, default=None):
-            prop = props.get(key, {})
+            prop = props.get(key) or {}
             return prop.get("converted_value", default)
 
         # Helper to rescale a raw API value that is reported in sub-units
@@ -318,7 +321,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         data = {
             "last_update": dt_util.now(),
             "salt_level_percent": wt.get("salt_level_percent"),
-            "salt_level_rounded": wt.get("salt_level", {}).get("salt_level_percent_rounded"),
+            "salt_level_rounded": (wt.get("salt_level") or {}).get("salt_level_percent_rounded"),
             "out_of_salt_days": get_prop_value("out_of_salt_estimate_days"),
             "low_salt_trip_days": get_prop_value("low_salt_trip_level_days"),
             "service_reminder": wts.get("service_reminder_message"),

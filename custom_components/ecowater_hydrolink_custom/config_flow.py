@@ -36,11 +36,12 @@ def _device_label(device):
     so it stays consistent with what ends up in the "model" sensor.
     """
     serial = device.get("serial_number") or "?"
-    water_treatment = device.get("enriched_data", {}).get("water_treatment", {}) or {}
+    enriched = device.get("enriched_data") or {}
+    water_treatment = enriched.get("water_treatment") or {}
     model = water_treatment.get("model")
     if not model:
-        props = device.get("properties", {}) or {}
-        model = props.get("model_description", {}).get("value")
+        props = device.get("properties") or {}
+        model = (props.get("model_description") or {}).get("value")
     return f"{serial} ({model})" if model else serial
 
 
