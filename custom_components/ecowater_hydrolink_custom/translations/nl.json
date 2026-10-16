@@ -11,15 +11,23 @@
           "unit_system": "Eenheidssysteem",
           "scan_interval_minutes": "Update interval (minuten)"
         }
+      },
+      "select_device": {
+        "title": "Apparaat selecteren",
+        "description": "Er zijn meerdere apparaten gevonden op dit account. Kies welke je wil toevoegen - je kan de integratie opnieuw toevoegen om een ander apparaat toe te voegen.",
+        "data": {
+          "device_id": "Apparaat"
+        }
       }
     },
     "error": {
       "cannot_connect": "Verbinding met de Hydrolink API mislukt.",
       "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord.",
+      "no_devices": "Geen apparaten gevonden op dit Hydrolink-account.",
       "unknown": "Er is een onverwachte fout opgetreden."
     },
     "abort": {
-      "already_configured": "Dit account is al geconfigureerd."
+      "already_configured": "Dit apparaat is al geconfigureerd."
     }
   },
   "options": {

@@ -19,6 +19,7 @@ from homeassistant.util import dt as dt_util
 from .const import (
     DOMAIN,
     BASE_URLS,
+    CONF_DEVICE_ID,
     CONF_REGION,
     REGION_EU,
     CONF_USERNAME,
@@ -53,7 +54,6 @@ class EcowaterCoordinator(DataUpdateCoordinator):
     - Data retrieval from /detail-or-summary
     - Unit system and language awareness
     - Calculation of daily usage from total water used
-    - Calculation of water used in the last regeneration cycle
     """
 
     def __init__(self, hass, entry):
@@ -88,7 +88,11 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         self.base_url = BASE_URLS[self.region]
         self.login_url = f"{self.base_url}/auth/login"
         self.devices_list_url = f"{self.base_url}/devices?all=false&per_page=200"
-        self.device_id = None  # Will be filled after first device list fetch
+        # Entries created via the device-selection step already know which
+        # device to poll. Older entries (created before that existed) omit
+        # this, so we fall back to auto-selecting the first device the
+        # account's device list returns - unchanged legacy behavior.
+        self.device_id = entry.data.get(CONF_DEVICE_ID)
 
         # Variables for calculated daily usage (derived from total_water_used)
         self._previous_total = None   # Last known total water value
@@ -101,11 +105,6 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         self._store = Store(
             hass, STORAGE_VERSION, f"{DOMAIN}.{entry.entry_id}.daily_usage"
         )
-
-        # Variables for water used in the last regeneration
-        self._prev_regen = False           # Previous regeneration state (True/False)
-        self._water_at_regen_start = None  # Total water at start of regeneration
-        self._water_used_last_regen = 0.0  # Water used in the last regeneration cycle
 
         # Update interval (in minutes) – from options, falling back to data
         interval = entry.options.get(
@@ -272,20 +271,23 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         Returns:
             dict: Mapped sensor data ready for use by sensor entities.
         """
-        props = device.get("properties", {})
-        enriched = device.get("enriched_data", {})
-        wt = enriched.get("water_treatment", {})
-        wts = wt.get("water_treatment_status", {})
-        dealership = device.get("dealership", {})
+        # The API returns an explicit null (not a missing key) for sections a
+        # device doesn't have - e.g. water_treatment.salt_level on a filter
+        # without a salt tank - so every nested lookup has to tolerate None.
+        props = device.get("properties") or {}
+        enriched = device.get("enriched_data") or {}
+        wt = enriched.get("water_treatment") or {}
+        wts = wt.get("water_treatment_status") or {}
+        dealership = device.get("dealership") or {}
 
         # Helper to safely extract a property value (e.g., "value" field)
         def get_prop_value(key, subkey="value", default=None):
-            prop = props.get(key, {})
+            prop = props.get(key) or {}
             return prop.get(subkey, default)
 
         # Helper to safely extract the converted (metric) value
         def get_prop_converted(key, default=None):
-            prop = props.get(key, {})
+            prop = props.get(key) or {}
             return prop.get("converted_value", default)
 
         # Helper to rescale a raw API value that is reported in sub-units
@@ -319,7 +321,7 @@ class EcowaterCoordinator(DataUpdateCoordinator):
         data = {
             "last_update": dt_util.now(),
             "salt_level_percent": wt.get("salt_level_percent"),
-            "salt_level_rounded": wt.get("salt_level", {}).get("salt_level_percent_rounded"),
+            "salt_level_rounded": (wt.get("salt_level") or {}).get("salt_level_percent_rounded"),
             "out_of_salt_days": get_prop_value("out_of_salt_estimate_days"),
             "low_salt_trip_days": get_prop_value("low_salt_trip_level_days"),
             "service_reminder": wts.get("service_reminder_message"),
@@ -412,33 +414,14 @@ class EcowaterCoordinator(DataUpdateCoordinator):
             data["calculated_daily_use"] = 0.0
 
         # ----- Water used in the last regeneration -----
-        # This calculates the amount of water consumed during the most recent regeneration cycle.
-        # It uses the transition of the 'is_regenerating' flag to capture total water at start and end.
-        current_regen = data.get("is_regenerating", False)
-        current_total_water = data.get("total_water_used")
-
-        if current_total_water is not None:
-            # Regeneration started: transition False -> True
-            if not self._prev_regen and current_regen:
-                self._water_at_regen_start = current_total_water
-                _LOGGER.debug("Regeneration started, water total at start: %s", self._water_at_regen_start)
-
-            # Regeneration ended: transition True -> False
-            elif self._prev_regen and not current_regen:
-                if self._water_at_regen_start is not None:
-                    self._water_used_last_regen = current_total_water - self._water_at_regen_start
-                    if self._water_used_last_regen < 0:
-                        self._water_used_last_regen = 0.0
-                    _LOGGER.debug("Regeneration ended, water used: %s", self._water_used_last_regen)
-                    self._water_at_regen_start = None
-                else:
-                    _LOGGER.warning("Regeneration ended but start value missing")
-
-            # Update previous state for next run
-            self._prev_regen = current_regen
-
-        # Store the calculated value (already in the current unit system)
-        data["water_used_in_last_regen"] = self._water_used_last_regen
+        # This was previously estimated as the delta of total_water_used
+        # (the outlet meter) across a regeneration cycle. That's fundamentally
+        # unmeasurable this way: regeneration water (backwash + brine rinse)
+        # goes to the drain and never passes through the outlet meter, so the
+        # delta is always exactly zero - a false reading, not a real "no water
+        # used". Report None (unknown) until the API is confirmed to expose a
+        # dedicated regeneration-water field to source this from instead.
+        data["water_used_in_last_regen"] = None
 
         _LOGGER.debug("Data assembled (unit system: %s)", self.unit_system)
         return data
