@@ -5,13 +5,15 @@
 [![hacs][hacsbadge]][hacs]
 [![Author][author-shield]][github]
 
-**Home Assistant integration for Ecowater water softeners via the Hydrolink platform.**
+**Home Assistant integration for Ecowater water softeners via the Hydrolink and iQua platforms.**
 
 This custom integration retrieves real-time data from your Ecowater water softener through the Hydrolink API and displays it as sensors and binary sensors in Home Assistant. You can monitor water usage, salt level, regeneration status, alerts, and many other parameters. The API offers many more sensors; currently the most relevant ones have been added.
 
-> **🌍 Multi-region support:** Starting from version 1.1.0, you can select your region during configuration:  
-> - **Europe** (`app.hydrolinkhome.eu`)  
-> - **US / Other** (`app.hydrolinkhome.com`)
+> **🌍 Multi-region support:** you select the server your account lives on during configuration:  
+> - **Hydrolink Europe** (`app.hydrolinkhome.eu`)  
+> - **Hydrolink US / Other** (`app.hydrolinkhome.com`)  
+> - **iQua 2** (`app.iqua2.com`) – e.g. the **Aquahome Duo Smart** / Viessmann softeners *(beta)*  
+> - **iQua** (iQua app) – older iQua accounts *(beta)*
 
 > **📏 Unit system selection:** Starting from version 1.3.0, you can choose between metric (liters, kg) and imperial (gallons, lbs) units during configuration or via options. The integration automatically displays the correct values based on your preference. The alternative unit is available as an attribute on each sensor (see below).
 
@@ -67,10 +69,12 @@ The integration is fully configured via the Home Assistant user interface.
 1. Go to **Settings → Devices & services**.
 2. Click **Add Integration** and search for "Ecowater Hydrolink Custom".
 3. Enter your login credentials (email and password of your Hydrolink account).
-4. **Select your region** (EU or US). This determines the correct API endpoint.
+4. **Select your region / platform** (Hydrolink EU, Hydrolink US, iQua 2 or iQua). This determines the correct API endpoint – see [iQua devices](#iqua-devices-aquahome-duo-smart) if you use the iQua app.
 5. **Select your preferred unit system** (metric or imperial).
 6. Set the desired **update interval** in minutes (default 5 minutes; 1 minute also works).
 7. Click **Submit**.
+
+If your account has more than one device, you'll be asked to pick which one to add. **Repeat the whole "Add Integration" flow once per device** (same credentials each time) to add each device as its own entry.
 
 After successful configuration, all sensors and binary sensors will appear automatically under one device.
 
@@ -80,6 +84,23 @@ After installation, you can adjust the update interval and unit system via:
 **Device → three dots → Options**
 
 > **Note:** When you change the unit system, the displayed values may not update immediately due to Home Assistant's entity state cache. After saving the options, the integration reloads and the new values will appear on the next sensor update. You can also force a refresh by restarting the integration or waiting for the next scheduled poll.
+
+### iQua devices (Aquahome Duo Smart)
+
+*(Beta – added in `1.5.0-beta.3`.)*
+
+Softeners that are managed with the **iQua** app – for example the **Aquahome Duo Smart** and other Viessmann-branded EcoWater softeners – run on the same EcoWater platform as Hydrolink, just under other server names. They are therefore supported as two extra choices in the **region** list, and you get the same sensors as a Hydrolink device (as far as your model reports them):
+
+| Choose this | If your account is on |
+|-------------|-----------------------|
+| **iQua 2** | the iQua 2 web portal (`app.iqua2.com`) – most newer accounts |
+| **iQua** | the older iQua servers (`api.myiquaapp.com`) |
+
+Log in with the **same e-mail address and password as in the iQua app**. If login fails, try the other iQua option – an account only exists on one of the two servers. You do not need to type a serial number: your devices are listed after logging in, so you can simply pick yours (add the integration once per device if you have several).
+
+> **Status:** these servers and the shared data model were identified from community projects and public API behaviour, and have **not yet been confirmed on a real Aquahome Duo Smart**. Please report your experience in [#12](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/12). Not yet supported: the water shutoff valve and an online/offline sensor.
+>
+> If you tried `1.5.0-beta.1` or `1.5.0-beta.2` (which asked for a serial number), remove that integration entry and add it again with the new setup.
 
 ## 📊 Sensors
 
@@ -117,9 +138,11 @@ The integration adds the following sensors (all grouped under one device). Units
 | `total_rock_removed` | Total hardness removed over lifetime | kg | | `imperial_value` / `metric_value` |
 | `total_salt_use` | Total salt consumed over lifetime | kg | | `imperial_value` / `metric_value` |
 | `calculated_daily_use` | Total calculated water use for today | L | water | `imperial_value` / `metric_value` |
-| `water_used_in_last_regen` | Water used during the last regeneration cycle (experimental – needs verification) | L | water | – |
+| `water_used_in_last_regen` | Water used during the last regeneration cycle (currently always unknown - see note below) | L | water | – |
 
-> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The `calculated_daily_use` resets to zero after each update. The `water_used_in_last_regen` sensor is experimental and its accuracy depends on whether the device reports total water usage during regeneration (this has not yet been confirmed). It will display `0` until a regeneration cycle has completed after updating.
+> **Note:** Attributes containing the alternative unit only appear after the sensor has received at least one update with the new unit setting. If you change the unit system, the attributes may be empty until the next data refresh. The `calculated_daily_use` resets to zero after each update.
+>
+> **`water_used_in_last_regen` currently always reports "unknown".** It was originally calculated as the change in `total_water_used` (the outlet meter) during a regeneration cycle, but that's not actually measurable that way: regeneration water (backwash and brine rinse) goes to the drain and never passes through the outlet meter, so the delta was always exactly zero - a false reading, not a genuine "no water used". Rather than keep reporting a misleading `0`, the sensor now reports unknown until the API is confirmed to expose a dedicated field for this (see [issue #18](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/18)).
 
 ## 🚨 Binary sensors
 
@@ -149,11 +172,42 @@ Attributes containing the alternative unit are only populated after the sensor h
 ### Unrealistic values for certain sensors
 Some sensors, such as `rock_removed_since_regen`, `total_rock_removed`, and `total_salt_use`, may display values that seem unrealistic (e.g., very high numbers for a newly installed device). These values come directly from the Hydrolink API and are not calculated or modified by the integration. They reflect the data provided by the manufacturer's cloud service.
 
+### Multiple devices under one account
+Starting from `1.4.3-beta.1`, adding the integration will show a device-selection step if your account has more than one device. Add the integration once per device (same credentials each time) - each becomes its own entry with its own sensors. Existing single-device setups are unaffected and don't need to be reconfigured.
+
 ### Known limitations
-- Not tested on multiple devices under a single account.
-- The `water_used_in_last_regen` sensor is experimental; its accuracy is not guaranteed and depends on the device's update behavior during regeneration.
+- `water_used_in_last_regen` always reports unknown; see the note under [📊 Sensors](#-sensors) above.
 
 ## 📝 Changelog
+
+### v1.5.0-beta.3 – iQua / Aquahome Duo Smart support via the shared platform
+
+Replaces the separate iQua backend of `1.5.0-beta.1/2`. Research showed that the iQua servers (`api.iqua2.com`, `api.myiquaapp.com`) expose the same API routes and device data model as Hydrolink, so iQua devices are now simply two more **regions** next to Hydrolink EU/US. Benefits: all existing sensors, device selection from the account's device list (no serial number to type), and one code path instead of two.
+
+#### ✨ New
+- Regions **iQua 2** and **iQua** (beta) – see [iQua devices](#iqua-devices-aquahome-duo-smart).
+- A login failure on an iQua region now points to the other iQua option.
+
+#### 📝 Notes
+- Includes everything from `1.4.3-beta.1` below (multi-device support, `hacs.json`, null-safe parsing).
+- Entries created with `1.5.0-beta.1/2` must be removed and added again.
+- Not yet confirmed on a real Aquahome Duo Smart. Water shutoff valve control and an online/offline sensor are not part of this beta.
+
+### v1.4.3-beta.1 – Multiple devices per account, fixed water_used_in_last_regen always reporting 0
+
+Combines the multi-device support described above with a fix for `water_used_in_last_regen`.
+
+The `water_used_in_last_regen` sensor (added in v1.4.0 as experimental) has been confirmed to always report `0`: it was calculated from the change in the outlet meter reading during a regeneration cycle, but regeneration water (backwash and brine rinse) goes to the drain and never passes through the outlet meter, so that delta is always exactly zero by design. Thanks [@delphiactual](https://github.com/delphiactual) for the root-cause analysis ([#18](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/18)).
+
+#### 🔧 Fixed
+- Accounts with more than one Hydrolink device can now add each device as its own entry (see [Multiple devices under one account](#multiple-devices-under-one-account) above). Fixes [#19](https://github.com/Roeli1996/ha-ecowater-hydrolink/issues/19).
+- `water_used_in_last_regen` now reports unknown instead of a misleading `0`, until the API is confirmed to expose a dedicated field for this.
+- Removed the now-dead regeneration-tracking state, which also fixes it resetting on every Home Assistant restart/reload.
+- A device whose API data contains explicit `null` sections - for example an iron filter, which has no salt tank - no longer crashes the update (`'NoneType' object has no attribute 'get'`) and can be added. Thanks [@Prophet6](https://github.com/Prophet6) for testing multi-device support, finding this and diagnosing it.
+- Added the missing `hacs.json`. Without it HACS refused to install a specific (pre-)release with *"The version … for this integration can not be used with HACS"*, regardless of how the version was named.
+
+#### 📝 Notes
+- No configuration changes needed for existing single-device setups. If a real data source for regeneration water usage turns up, that sensor will be revisited.
 
 ### v1.4.2 – Persist calculated daily usage across restarts
 
@@ -291,6 +345,8 @@ If you're happy with the current version, you can safely skip this update.
 ## 🙏 Credits
 
 Special thanks to [@delphiactual](https://github.com/delphiactual) for a series of high-quality contributions: root-causing why `water_used_in_last_regen` always reported zero, fixing several sensor unit/scaling/statistics issues (#16), and adding persistence for the calculated daily usage sensor across restarts (#17).
+
+Thanks to [@Prophet6](https://github.com/Prophet6) for testing multi-device support on a real account and tracking down the crash on devices without a salt tank, and to [@harish-ramaswamy](https://github.com/harish-ramaswamy) for reporting the multi-device problem (#19) and for the patience while the HACS installation issue was being sorted out.
 
 Thanks as well to everyone who reports issues, tests beta releases, and contributes translations – this integration is better for it.
 

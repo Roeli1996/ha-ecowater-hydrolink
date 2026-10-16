@@ -11,15 +11,24 @@
           "unit_system": "Einheitensystem",
           "scan_interval_minutes": "Aktualisierungsintervall (Minuten)"
         }
+      },
+      "select_device": {
+        "title": "Gerät auswählen",
+        "description": "Es wurden mehrere Geräte in diesem Konto gefunden. Wählen Sie aus, welches hinzugefügt werden soll - Sie können die Integration erneut hinzufügen, um ein weiteres Gerät hinzuzufügen.",
+        "data": {
+          "device_id": "Gerät"
+        }
       }
     },
     "error": {
       "cannot_connect": "Verbindung zur Hydrolink-API fehlgeschlagen.",
-      "invalid_auth": "Ungültiger Benutzername oder Passwort.",
+      "invalid_auth": "Ungültiger Benutzername oder Passwort.",
+      "invalid_auth_iqua": "Ungültiger Benutzername oder Passwort. Probieren Sie bei einem iQua-Konto auch die andere iQua-Option (iQua oder iQua 2) - ein Konto existiert nur auf einem der beiden Server.",
+      "no_devices": "Keine Geräte in diesem Hydrolink-Konto gefunden.",
       "unknown": "Ein unerwarteter Fehler ist aufgetreten."
     },
     "abort": {
-      "already_configured": "Dieses Konto ist bereits konfiguriert."
+      "already_configured": "Dieses Gerät ist bereits konfiguriert."
     }
   },
   "options": {
